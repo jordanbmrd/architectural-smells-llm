@@ -1,0 +1,10 @@
+venv
+example1
+example2
+depends_output
+arcan-1.2.1
+depends.log
+depends-dv8map.mapping
+depends.jar
+.env
+data
