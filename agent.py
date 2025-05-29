@@ -1,10 +1,16 @@
 import os
 import json
 import dotenv
+import tempfile
+import shutil
+from pathlib import Path
+import subprocess
 from openai import OpenAI
 from typing import Dict, List, Optional, Set, Tuple
 import networkx as nx
 import pydot
+from analyze_project import analyze_project
+from prepare_project import clone_and_clean, get_repo_name
 
 # Load environment variables from .env file
 dotenv.load_dotenv()
@@ -18,6 +24,26 @@ client = OpenAI(
     api_key=API_KEY,
     base_url="https://api.x.ai/v1"
 )
+
+def clone_repository(repo_url: str) -> str:
+    """Clone a GitHub repository to the current directory and return its path."""
+    # Extract repository name from URL
+    repo_name = repo_url.split('/')[-1].replace('.git', '')
+    repo_path = os.path.join(os.getcwd(), repo_name)
+    
+    # Remove directory if it already exists
+    if os.path.exists(repo_path):
+        shutil.rmtree(repo_path)
+    
+    try:
+        # Clone the repository
+        subprocess.run(["git", "clone", repo_url], check=True, capture_output=True, text=True)
+        return repo_path
+    except subprocess.CalledProcessError as e:
+        print(f"Error cloning repository: {e.stderr}")
+        if os.path.exists(repo_path):
+            shutil.rmtree(repo_path)
+        raise
 
 def detect_cyclic_dependencies(dot_file_path: str) -> List[List[str]]:
     """
@@ -421,16 +447,59 @@ Respond ONLY with the JSON structure, no additional text.
         print(f"Error calling Grok API: {e}")
         return None
 
-# Example usage
+def main(repo_url: str):
+    """Main function to analyze a GitHub repository."""
+    try:
+        # Step 1: Clone and clean the repository using prepare_project.py
+        print(f"Cloning and cleaning repository: {repo_url}")
+        clone_dir = "cloned_projects"
+        os.makedirs(clone_dir, exist_ok=True)
+        
+        clone_and_clean(repo_url, clone_dir)
+        
+        # Get the repository path and create its data directory
+        _, repo_name = get_repo_name(repo_url)
+        repo_path = os.path.join(clone_dir, repo_name)
+        output_dir = os.path.join(repo_path, "data")
+        os.makedirs(output_dir, exist_ok=True)
+        
+        try:
+            # Step 2: Run the project analysis
+            print("Running project analysis...")
+            analyze_project(repo_path, output_dir)
+            
+            # Step 3: Run the architecture analysis
+            print("Running architecture analysis...")
+            response = analyze_architecture_with_grok(
+                dependencies_json_path=os.path.join(output_dir, "dependencies-file.json"),
+                project_structure_json_path=os.path.join(output_dir, "project_structure.json"),
+                dependency_graph_path=os.path.join(output_dir, "dependency_graph-file.dot"),
+                dependencies_details_path=os.path.join(output_dir, "dependencies_details-file.json")
+            )
+            
+            if response:
+                print("\nAnalysis Results:")
+                print(json.dumps(response, indent=2))  # Pretty print the JSON response
+                
+                # Save analysis results
+                with open(os.path.join(output_dir, "analysis_results.json"), 'w') as f:
+                    json.dump(response, f, indent=2)
+                print(f"\nAnalysis results saved to {output_dir}/analysis_results.json")
+            else:
+                print("Error: No analysis results were generated.")
+                
+        except Exception as e:
+            print(f"Error during analysis: {e}")
+            raise
+            
+    except Exception as e:
+        print(f"Error during analysis: {e}")
+        raise
+
 if __name__ == "__main__":
-    # Method 1: Using file paths
-    response = analyze_architecture_with_grok(
-        dependencies_json_path="data/dependencies.json",
-        project_structure_json_path="data/project_structure.json",
-        dependency_graph_path="data/dependency_graph.dot",  # Optional
-        dependencies_details_path="data/dependencies_details.json"  # Optional
-    )
+    import sys
+    if len(sys.argv) != 2:
+        print("Usage: python agent.py <GitHub repository URL>")
+        sys.exit(1)
     
-    if response:
-        print("Analysis Result:")
-        print(json.dumps(response, indent=2))  # Pretty print the JSON response
+    main(sys.argv[1])
