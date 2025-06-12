@@ -1,0 +1,57 @@
+# Ignore specific folders
+pyrasbt/
+alpyproj/
+imnofin/
+qzresearch/
+
+# Ignore Python compiled files
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environment
+venv/
+env/
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+chap/
+
+sample_project/
+
+evaluation/
+
+inmotifin/
+
+melodipyi/
+
+pseudohnn/
+
+simapy/
+
+rewts/
+
+rttarr/
+
+sponge/
+
+analysis/
+
+cloned_repositories/
+
+
+visualizations/
+
+
+.pytest_cache/
+
+docs/_build/
+
+*.egg-info/
+
+
