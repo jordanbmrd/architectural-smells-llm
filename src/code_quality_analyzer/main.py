@@ -189,8 +189,8 @@ def analyze_project(debug=False, smell_type=None):
 
         if smell_type in [None, 'code']:
             print("Analyzing Code Smells...")
-            code_detector = CodeSmellDetector(config_handler.get_thresholds('code_smells'))
-            code_smells = analyze_code_smells(args.directory, code_detector)
+            #code_detector = CodeSmellDetector(config_handler.get_thresholds('code_smells'))
+            #code_smells = analyze_code_smells(args.directory, code_detector)
 
         if smell_type in [None, 'architectural']:
             print("Analyzing Architectural Smells...")
