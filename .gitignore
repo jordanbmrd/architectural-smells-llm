@@ -1,6 +1,5 @@
 venv
-example1
-example2
+versions_to_analyze
 depends_output
 arcan-1.2.1
 depends.log
