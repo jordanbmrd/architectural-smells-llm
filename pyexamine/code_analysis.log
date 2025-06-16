@@ -1032,3 +1032,63 @@ Function: None
 2025-05-30 16:51:45,743 - code_quality_analyzer.config_handler - INFO - Loading configuration from: code_quality_config.yaml
 2025-05-30 16:51:45,743 - code_quality_analyzer.config_handler - INFO - Loaded thresholds: {'code_smells': {'LONG_METHOD_LINES': 45, 'LARGE_CLASS_METHODS': 15, 'PRIMITIVE_OBSESSION_COUNT': 4, 'LONG_PARAMETER_LIST': 5, 'COMPLEX_CONDITIONAL': 3, 'DIVERGENT_CHANGE_PREFIXES': 4, 'SHOTGUN_SURGERY_CALLS': 5, 'EXCESSIVE_COMMENTS_RATIO': 0.3, 'LAZY_CLASS_METHODS': 4, 'FEATURE_ENVY_CALLS': 3, 'INAPPROPRIATE_INTIMACY_SHARED': 3, 'MESSAGE_CHAIN_LENGTH': 3, 'DATA_CLUMPS_THRESHOLD': 6, 'TEMPORARY_FIELD_THRESHOLD': 3, 'ALTERNATIVE_CLASSES_THRESHOLD': 3, 'DUPLICATE_CODE_THRESHOLD': 15, 'DEAD_CODE_THRESHOLD': 3, 'SPECULATIVE_GENERALITY_THRESHOLD': 4, 'MIDDLE_MAN_RATIO': 0.5, 'DIVERGENT_CHANGE_METHODS': 5, 'SHOTGUN_SURGERY_CONTEXTS': 3, 'DUPLICATE_CODE_MIN_LINES': 5, 'LARGE_COMMENT_BLOCKS': 5}, 'architectural_smells': {'GOD_OBJECT_FUNCTIONS': 20, 'UNSTABLE_DEPENDENCY_THRESHOLD': 0.8, 'HUB_LIKE_DEPENDENCY_RATIO': 0.3, 'REDUNDANT_ABSTRACTION_SIMILARITY': 0.7, 'IMPROPER_API_USAGE_RATIO': 0.7, 'CYCLIC_DEPENDENCY_MAX_LENGTH': 3}, 'structural_smells': {'NOM_THRESHOLD': 10, 'WMPC1_THRESHOLD': 20, 'WMPC2_THRESHOLD': 20, 'SIZE2_THRESHOLD': 15, 'WAC_THRESHOLD': 10, 'LCOM_THRESHOLD': 10, 'RFC_THRESHOLD': 20, 'NOCC_THRESHOLD': 10, 'DIT_THRESHOLD': 3, 'LOC_THRESHOLD': 150, 'MPC_THRESHOLD': 25, 'CBO_THRESHOLD': 5, 'NOC_THRESHOLD': 7, 'CYCLOMATIC_COMPLEXITY_THRESHOLD': 10, 'MAX_FANOUT': 15, 'MAX_FANIN': 15, 'MAX_FILE_LENGTH': 250, 'MAX_BRANCHES': 10, 'MAX_NESTING_DEPTH': 4}}
 2025-05-30 16:51:45,743 - code_quality_analyzer.architectural_smell_detector - INFO - Analyzing directory structure: ../transformers/v4.52.4
+2025-06-13 13:58:23,225 - code_quality_analyzer.main - INFO - Loading configuration from: code_quality_config.yaml
+2025-06-13 13:58:23,235 - code_quality_analyzer.config_handler - INFO - Loading configuration from: code_quality_config.yaml
+2025-06-13 13:58:23,235 - code_quality_analyzer.config_handler - INFO - Loaded thresholds: {'code_smells': {'LONG_METHOD_LINES': 45, 'LARGE_CLASS_METHODS': 15, 'PRIMITIVE_OBSESSION_COUNT': 4, 'LONG_PARAMETER_LIST': 5, 'COMPLEX_CONDITIONAL': 3, 'DIVERGENT_CHANGE_PREFIXES': 4, 'SHOTGUN_SURGERY_CALLS': 5, 'EXCESSIVE_COMMENTS_RATIO': 0.3, 'LAZY_CLASS_METHODS': 4, 'FEATURE_ENVY_CALLS': 3, 'INAPPROPRIATE_INTIMACY_SHARED': 3, 'MESSAGE_CHAIN_LENGTH': 3, 'DATA_CLUMPS_THRESHOLD': 6, 'TEMPORARY_FIELD_THRESHOLD': 3, 'ALTERNATIVE_CLASSES_THRESHOLD': 3, 'DUPLICATE_CODE_THRESHOLD': 15, 'DEAD_CODE_THRESHOLD': 3, 'SPECULATIVE_GENERALITY_THRESHOLD': 4, 'MIDDLE_MAN_RATIO': 0.5, 'DIVERGENT_CHANGE_METHODS': 5, 'SHOTGUN_SURGERY_CONTEXTS': 3, 'DUPLICATE_CODE_MIN_LINES': 5, 'LARGE_COMMENT_BLOCKS': 5}, 'architectural_smells': {'GOD_OBJECT_FUNCTIONS': 20, 'UNSTABLE_DEPENDENCY_THRESHOLD': 0.8, 'HUB_LIKE_DEPENDENCY_RATIO': 0.3, 'REDUNDANT_ABSTRACTION_SIMILARITY': 0.7, 'IMPROPER_API_USAGE_RATIO': 0.7, 'CYCLIC_DEPENDENCY_MAX_LENGTH': 3}, 'structural_smells': {'NOM_THRESHOLD': 10, 'WMPC1_THRESHOLD': 20, 'WMPC2_THRESHOLD': 20, 'SIZE2_THRESHOLD': 15, 'WAC_THRESHOLD': 10, 'LCOM_THRESHOLD': 10, 'RFC_THRESHOLD': 20, 'NOCC_THRESHOLD': 10, 'DIT_THRESHOLD': 3, 'LOC_THRESHOLD': 150, 'MPC_THRESHOLD': 25, 'CBO_THRESHOLD': 5, 'NOC_THRESHOLD': 7, 'CYCLOMATIC_COMPLEXITY_THRESHOLD': 10, 'MAX_FANOUT': 15, 'MAX_FANIN': 15, 'MAX_FILE_LENGTH': 250, 'MAX_BRANCHES': 10, 'MAX_NESTING_DEPTH': 4}}
+2025-06-13 13:58:23,235 - code_quality_analyzer.architectural_smell_detector - INFO - Analyzing directory structure: ./
+2025-06-13 13:58:23,280 - code_quality_analyzer.structural_smell_detector - INFO - Analyzing directory structure: ./
+2025-06-13 13:58:23,281 - code_quality_analyzer.structural_smell_detector - INFO - Starting analysis of directory: ./
+2025-06-13 13:58:23,335 - code_quality_analyzer.structural_smell_detector - INFO - 
+Analysis Summary:
+----------------
+Files analyzed: 13
+Files with errors: 0
+Success rate: 100.0%
+        
+2025-06-13 13:58:23,335 - code_quality_analyzer.structural_smell_detector - INFO - Detecting NOM smells with threshold: 10
+2025-06-13 13:58:23,336 - code_quality_analyzer.structural_smell_detector - INFO - Detected NOM smell in src.code_quality_analyzer.structural_smell_detector.StructuralSmellDetector: 34 methods
+2025-06-13 13:58:23,336 - code_quality_analyzer.structural_smell_detector - INFO - Detected NOM smell in src.code_quality_analyzer.code_smell_detector.CodeSmellDetector: 24 methods
+2025-06-13 13:58:23,336 - code_quality_analyzer.structural_smell_detector - INFO - Detected NOM smell in src.code_quality_analyzer.architectural_smell_detector.ArchitecturalSmellDetector: 15 methods
+2025-06-13 13:58:23,402 - code_quality_analyzer.structural_smell_detector - INFO - Analysis complete. Found 94 structural smells.
+2025-06-13 13:58:23,402 - code_quality_analyzer.main - INFO - Structural smell analysis complete. Found 94 smells.
+2025-06-13 13:58:23,404 - code_quality_analyzer.main - INFO - CSV report generated and saved to code_quality_report.csv
+2025-06-13 13:58:24,760 - code_quality_analyzer.main - INFO - Loading configuration from: code_quality_config.yaml
+2025-06-13 13:58:24,769 - code_quality_analyzer.config_handler - INFO - Loading configuration from: code_quality_config.yaml
+2025-06-13 13:58:24,769 - code_quality_analyzer.config_handler - INFO - Loaded thresholds: {'code_smells': {'LONG_METHOD_LINES': 45, 'LARGE_CLASS_METHODS': 15, 'PRIMITIVE_OBSESSION_COUNT': 4, 'LONG_PARAMETER_LIST': 5, 'COMPLEX_CONDITIONAL': 3, 'DIVERGENT_CHANGE_PREFIXES': 4, 'SHOTGUN_SURGERY_CALLS': 5, 'EXCESSIVE_COMMENTS_RATIO': 0.3, 'LAZY_CLASS_METHODS': 4, 'FEATURE_ENVY_CALLS': 3, 'INAPPROPRIATE_INTIMACY_SHARED': 3, 'MESSAGE_CHAIN_LENGTH': 3, 'DATA_CLUMPS_THRESHOLD': 6, 'TEMPORARY_FIELD_THRESHOLD': 3, 'ALTERNATIVE_CLASSES_THRESHOLD': 3, 'DUPLICATE_CODE_THRESHOLD': 15, 'DEAD_CODE_THRESHOLD': 3, 'SPECULATIVE_GENERALITY_THRESHOLD': 4, 'MIDDLE_MAN_RATIO': 0.5, 'DIVERGENT_CHANGE_METHODS': 5, 'SHOTGUN_SURGERY_CONTEXTS': 3, 'DUPLICATE_CODE_MIN_LINES': 5, 'LARGE_COMMENT_BLOCKS': 5}, 'architectural_smells': {'GOD_OBJECT_FUNCTIONS': 20, 'UNSTABLE_DEPENDENCY_THRESHOLD': 0.8, 'HUB_LIKE_DEPENDENCY_RATIO': 0.3, 'REDUNDANT_ABSTRACTION_SIMILARITY': 0.7, 'IMPROPER_API_USAGE_RATIO': 0.7, 'CYCLIC_DEPENDENCY_MAX_LENGTH': 3}, 'structural_smells': {'NOM_THRESHOLD': 10, 'WMPC1_THRESHOLD': 20, 'WMPC2_THRESHOLD': 20, 'SIZE2_THRESHOLD': 15, 'WAC_THRESHOLD': 10, 'LCOM_THRESHOLD': 10, 'RFC_THRESHOLD': 20, 'NOCC_THRESHOLD': 10, 'DIT_THRESHOLD': 3, 'LOC_THRESHOLD': 150, 'MPC_THRESHOLD': 25, 'CBO_THRESHOLD': 5, 'NOC_THRESHOLD': 7, 'CYCLOMATIC_COMPLEXITY_THRESHOLD': 10, 'MAX_FANOUT': 15, 'MAX_FANIN': 15, 'MAX_FILE_LENGTH': 250, 'MAX_BRANCHES': 10, 'MAX_NESTING_DEPTH': 4}}
+2025-06-13 13:58:24,770 - code_quality_analyzer.architectural_smell_detector - INFO - Analyzing directory structure: ./
+2025-06-13 13:58:24,823 - code_quality_analyzer.structural_smell_detector - INFO - Analyzing directory structure: ./
+2025-06-13 13:58:24,823 - code_quality_analyzer.structural_smell_detector - INFO - Starting analysis of directory: ./
+2025-06-13 13:58:24,881 - code_quality_analyzer.structural_smell_detector - INFO - 
+Analysis Summary:
+----------------
+Files analyzed: 13
+Files with errors: 0
+Success rate: 100.0%
+        
+2025-06-13 13:58:24,881 - code_quality_analyzer.structural_smell_detector - INFO - Detecting NOM smells with threshold: 10
+2025-06-13 13:58:24,881 - code_quality_analyzer.structural_smell_detector - INFO - Detected NOM smell in src.code_quality_analyzer.structural_smell_detector.StructuralSmellDetector: 34 methods
+2025-06-13 13:58:24,881 - code_quality_analyzer.structural_smell_detector - INFO - Detected NOM smell in src.code_quality_analyzer.code_smell_detector.CodeSmellDetector: 24 methods
+2025-06-13 13:58:24,881 - code_quality_analyzer.structural_smell_detector - INFO - Detected NOM smell in src.code_quality_analyzer.architectural_smell_detector.ArchitecturalSmellDetector: 15 methods
+2025-06-13 13:58:24,944 - code_quality_analyzer.structural_smell_detector - INFO - Analysis complete. Found 94 structural smells.
+2025-06-13 13:58:24,944 - code_quality_analyzer.main - INFO - Structural smell analysis complete. Found 94 smells.
+2025-06-13 13:58:24,945 - code_quality_analyzer.main - INFO - CSV report generated and saved to code_quality_report.csv
+2025-06-13 13:58:26,380 - code_quality_analyzer.main - INFO - Loading configuration from: code_quality_config.yaml
+2025-06-13 13:58:26,387 - code_quality_analyzer.config_handler - INFO - Loading configuration from: code_quality_config.yaml
+2025-06-13 13:58:26,387 - code_quality_analyzer.config_handler - INFO - Loaded thresholds: {'code_smells': {'LONG_METHOD_LINES': 45, 'LARGE_CLASS_METHODS': 15, 'PRIMITIVE_OBSESSION_COUNT': 4, 'LONG_PARAMETER_LIST': 5, 'COMPLEX_CONDITIONAL': 3, 'DIVERGENT_CHANGE_PREFIXES': 4, 'SHOTGUN_SURGERY_CALLS': 5, 'EXCESSIVE_COMMENTS_RATIO': 0.3, 'LAZY_CLASS_METHODS': 4, 'FEATURE_ENVY_CALLS': 3, 'INAPPROPRIATE_INTIMACY_SHARED': 3, 'MESSAGE_CHAIN_LENGTH': 3, 'DATA_CLUMPS_THRESHOLD': 6, 'TEMPORARY_FIELD_THRESHOLD': 3, 'ALTERNATIVE_CLASSES_THRESHOLD': 3, 'DUPLICATE_CODE_THRESHOLD': 15, 'DEAD_CODE_THRESHOLD': 3, 'SPECULATIVE_GENERALITY_THRESHOLD': 4, 'MIDDLE_MAN_RATIO': 0.5, 'DIVERGENT_CHANGE_METHODS': 5, 'SHOTGUN_SURGERY_CONTEXTS': 3, 'DUPLICATE_CODE_MIN_LINES': 5, 'LARGE_COMMENT_BLOCKS': 5}, 'architectural_smells': {'GOD_OBJECT_FUNCTIONS': 20, 'UNSTABLE_DEPENDENCY_THRESHOLD': 0.8, 'HUB_LIKE_DEPENDENCY_RATIO': 0.3, 'REDUNDANT_ABSTRACTION_SIMILARITY': 0.7, 'IMPROPER_API_USAGE_RATIO': 0.7, 'CYCLIC_DEPENDENCY_MAX_LENGTH': 3}, 'structural_smells': {'NOM_THRESHOLD': 10, 'WMPC1_THRESHOLD': 20, 'WMPC2_THRESHOLD': 20, 'SIZE2_THRESHOLD': 15, 'WAC_THRESHOLD': 10, 'LCOM_THRESHOLD': 10, 'RFC_THRESHOLD': 20, 'NOCC_THRESHOLD': 10, 'DIT_THRESHOLD': 3, 'LOC_THRESHOLD': 150, 'MPC_THRESHOLD': 25, 'CBO_THRESHOLD': 5, 'NOC_THRESHOLD': 7, 'CYCLOMATIC_COMPLEXITY_THRESHOLD': 10, 'MAX_FANOUT': 15, 'MAX_FANIN': 15, 'MAX_FILE_LENGTH': 250, 'MAX_BRANCHES': 10, 'MAX_NESTING_DEPTH': 4}}
+2025-06-13 13:58:26,388 - code_quality_analyzer.architectural_smell_detector - INFO - Analyzing directory structure: ./
+2025-06-13 13:58:26,421 - code_quality_analyzer.structural_smell_detector - INFO - Analyzing directory structure: ./
+2025-06-13 13:58:26,421 - code_quality_analyzer.structural_smell_detector - INFO - Starting analysis of directory: ./
+2025-06-13 13:58:26,458 - code_quality_analyzer.structural_smell_detector - INFO - 
+Analysis Summary:
+----------------
+Files analyzed: 13
+Files with errors: 0
+Success rate: 100.0%
+        
+2025-06-13 13:58:26,458 - code_quality_analyzer.structural_smell_detector - INFO - Detecting NOM smells with threshold: 10
+2025-06-13 13:58:26,458 - code_quality_analyzer.structural_smell_detector - INFO - Detected NOM smell in src.code_quality_analyzer.structural_smell_detector.StructuralSmellDetector: 34 methods
+2025-06-13 13:58:26,458 - code_quality_analyzer.structural_smell_detector - INFO - Detected NOM smell in src.code_quality_analyzer.code_smell_detector.CodeSmellDetector: 24 methods
+2025-06-13 13:58:26,458 - code_quality_analyzer.structural_smell_detector - INFO - Detected NOM smell in src.code_quality_analyzer.architectural_smell_detector.ArchitecturalSmellDetector: 15 methods
+2025-06-13 13:58:26,570 - code_quality_analyzer.structural_smell_detector - INFO - Analysis complete. Found 94 structural smells.
+2025-06-13 13:58:26,570 - code_quality_analyzer.main - INFO - Structural smell analysis complete. Found 94 smells.
+2025-06-13 13:58:26,571 - code_quality_analyzer.main - INFO - CSV report generated and saved to code_quality_report.csv

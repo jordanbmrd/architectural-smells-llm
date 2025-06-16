@@ -1,15 +1,496 @@
 Code Quality Analysis Report
 ============================
 
-No structural smells detected.
+Structural Smells:
+-------------------
+- High Number of Methods (NOM): Class 'src.code_quality_analyzer.structural_smell_detector.StructuralSmellDetector' has 34 methods (excluding special methods and properties)
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: High
+
+- High Number of Methods (NOM): Class 'src.code_quality_analyzer.code_smell_detector.CodeSmellDetector' has 24 methods (excluding special methods and properties)
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- High Number of Methods (NOM): Class 'src.code_quality_analyzer.architectural_smell_detector.ArchitecturalSmellDetector' has 15 methods (excluding special methods and properties)
+  File: ./src/code_quality_analyzer/architectural_smell_detector.py
+  Severity: Medium
+
+- High Response for a Class (RFC): Class 'src.code_quality_analyzer.structural_smell_detector.StructuralSmellDetector' has RFC of 73 (methods: 34, external calls: 39)
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: High
+
+- High Response for a Class (RFC): Class 'src.code_quality_analyzer.code_smell_detector.CodeSmellDetector' has RFC of 49 (methods: 24, external calls: 25)
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- High Response for a Class (RFC): Class 'src.code_quality_analyzer.architectural_smell_detector.ArchitecturalSmellDetector' has RFC of 50 (methods: 15, external calls: 35)
+  File: ./src/code_quality_analyzer/architectural_smell_detector.py
+  Severity: High
+
+- High Lines of Code (LOC): Module 'src.code_quality_analyzer.structural_smell_detector' has 499 effective code lines
+(Total: 1325, Code: 499, Doc: 570, Import: 8, Blank: 192)
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: High
+
+- High Lines of Code (LOC): Module 'src.code_quality_analyzer.code_smell_detector' has 501 effective code lines
+(Total: 1161, Code: 501, Doc: 469, Import: 9, Blank: 138)
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- High Lines of Code (LOC): Module 'src.code_quality_analyzer.architectural_smell_detector' has 337 effective code lines
+(Total: 553, Code: 337, Doc: 85, Import: 11, Blank: 83)
+  File: ./src/code_quality_analyzer/architectural_smell_detector.py
+  Severity: High
+
+- High Number of Classes (NOC): Project has 8.0 weighted classes:
+- Regular classes: 8
+- Abstract/Interface classes: 0
+- Utility classes: 0
+- Test classes: 0 (not counted in weighted total)
+Adjusted threshold: 7
+  File: /Users/polguillou/Desktop/DMU-Work/architectural-smells-llm/pyexamine
+  Severity: Medium
+
+- High Cyclomatic Complexity: Method 'analyze_file' has cyclomatic complexity of 12
+  Line: 182
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- High Cyclomatic Complexity: Method 'detect_wmpc' has cyclomatic complexity of 11
+  Line: 328
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- High Cyclomatic Complexity: Method 'detect_lcom' has cyclomatic complexity of 14
+  Line: 439
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- High Cyclomatic Complexity: Method '_build_field_usage_map' has cyclomatic complexity of 11
+  Line: 493
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- High Cyclomatic Complexity: Method 'detect_rfc' has cyclomatic complexity of 14
+  Line: 521
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- High Cyclomatic Complexity: Method 'detect_dit' has cyclomatic complexity of 18
+  Line: 624
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: High
+
+- High Cyclomatic Complexity: Method 'detect_loc' has cyclomatic complexity of 19
+  Line: 689
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: High
+
+- High Cyclomatic Complexity: Method 'detect_cbo' has cyclomatic complexity of 15
+  Line: 829
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- High Cyclomatic Complexity: Method 'detect_file_length' has cyclomatic complexity of 15
+  Line: 1185
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- High Cyclomatic Complexity: Method 'detect_long_methods' has cyclomatic complexity of 17
+  Line: 116
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- High Cyclomatic Complexity: Method 'detect_large_classes' has cyclomatic complexity of 23
+  Line: 153
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- High Cyclomatic Complexity: Method 'detect_primitive_obsession' has cyclomatic complexity of 13
+  Line: 200
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- High Cyclomatic Complexity: Method 'detect_data_clumps' has cyclomatic complexity of 14
+  Line: 273
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- High Cyclomatic Complexity: Method 'detect_switch_statements' has cyclomatic complexity of 13
+  Line: 313
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- High Cyclomatic Complexity: Method 'detect_temporary_fields' has cyclomatic complexity of 25
+  Line: 353
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- High Cyclomatic Complexity: Method 'detect_alternative_classes' has cyclomatic complexity of 22
+  Line: 415
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- High Cyclomatic Complexity: Method 'detect_divergent_change' has cyclomatic complexity of 35
+  Line: 474
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- High Cyclomatic Complexity: Method 'detect_parallel_inheritance' has cyclomatic complexity of 19
+  Line: 540
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- High Cyclomatic Complexity: Method 'detect_comments' has cyclomatic complexity of 13
+  Line: 620
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- High Cyclomatic Complexity: Method 'detect_data_class' has cyclomatic complexity of 17
+  Line: 707
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- High Cyclomatic Complexity: Method 'detect_dead_code' has cyclomatic complexity of 21
+  Line: 751
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- High Cyclomatic Complexity: Method 'detect_lazy_class' has cyclomatic complexity of 12
+  Line: 807
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- High Cyclomatic Complexity: Method 'detect_speculative_generality' has cyclomatic complexity of 13
+  Line: 841
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- High Cyclomatic Complexity: Method 'detect_feature_envy' has cyclomatic complexity of 25
+  Line: 884
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- High Cyclomatic Complexity: Method 'detect_inappropriate_intimacy' has cyclomatic complexity of 28
+  Line: 939
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- High Cyclomatic Complexity: Method 'detect_middle_man' has cyclomatic complexity of 26
+  Line: 1066
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- High Cyclomatic Complexity: Method 'analyze_file' has cyclomatic complexity of 20
+  Line: 128
+  File: ./src/code_quality_analyzer/architectural_smell_detector.py
+  Severity: High
+
+- High Cyclomatic Complexity: Method 'resolve_external_dependencies' has cyclomatic complexity of 12
+  Line: 195
+  File: ./src/code_quality_analyzer/architectural_smell_detector.py
+  Severity: Medium
+
+- High Cyclomatic Complexity: Method 'detect_redundant_abstractions' has cyclomatic complexity of 12
+  Line: 331
+  File: ./src/code_quality_analyzer/architectural_smell_detector.py
+  Severity: Medium
+
+- Long File: File 'src.code_quality_analyzer.structural_smell_detector' has 507 meaningful lines of code
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: High
+
+- Long File: File 'src.code_quality_analyzer.code_smell_detector' has 510 meaningful lines of code
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- Long File: File 'src.code_quality_analyzer.architectural_smell_detector' has 348 meaningful lines of code
+  File: ./src/code_quality_analyzer/architectural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_smells' has 6 branches with max nesting of 4
+  Line: 88
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'analyze_directory' has 9 branches with max nesting of 6
+  Line: 137
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'analyze_file' has 13 branches with max nesting of 8
+  Line: 182
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'analyze_class' has 6 branches with max nesting of 5
+  Line: 239
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_wmpc' has 7 branches with max nesting of 7
+  Line: 328
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_wac' has 5 branches with max nesting of 5
+  Line: 400
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_lcom' has 8 branches with max nesting of 8
+  Line: 439
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method '_build_field_usage_map' has 9 branches with max nesting of 9
+  Line: 493
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_rfc' has 11 branches with max nesting of 11
+  Line: 521
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_nocc' has 8 branches with max nesting of 7
+  Line: 571
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_dit' has 14 branches with max nesting of 13
+  Line: 624
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_loc' has 17 branches with max nesting of 15
+  Line: 689
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: High
+
+- Too Many Branches: Method 'detect_mpc' has 7 branches with max nesting of 7
+  Line: 778
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_cbo' has 12 branches with max nesting of 11
+  Line: 829
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method '_get_base_object' has 5 branches with max nesting of 4
+  Line: 885
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method '_is_excluded_dependency' has 4 branches with max nesting of 4
+  Line: 903
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_noc' has 8 branches with max nesting of 6
+  Line: 950
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_cyclomatic_complexity' has 4 branches with max nesting of 4
+  Line: 1073
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'calculate_cyclomatic_complexity' has 8 branches with max nesting of 5
+  Line: 1098
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_file_length' has 13 branches with max nesting of 11
+  Line: 1185
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_branches' has 4 branches with max nesting of 4
+  Line: 1240
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method '_analyze_branches' has 7 branches with max nesting of 5
+  Line: 1269
+  File: ./src/code_quality_analyzer/structural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_smells' has 8 branches with max nesting of 4
+  Line: 46
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_long_methods' has 12 branches with max nesting of 11
+  Line: 116
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_large_classes' has 17 branches with max nesting of 15
+  Line: 153
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- Too Many Branches: Method 'detect_primitive_obsession' has 9 branches with max nesting of 9
+  Line: 200
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_long_parameter_lists' has 5 branches with max nesting of 5
+  Line: 237
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_data_clumps' has 8 branches with max nesting of 8
+  Line: 273
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_switch_statements' has 8 branches with max nesting of 7
+  Line: 313
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_temporary_fields' has 18 branches with max nesting of 16
+  Line: 353
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- Too Many Branches: Method 'detect_alternative_classes' has 16 branches with max nesting of 14
+  Line: 415
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- Too Many Branches: Method 'detect_divergent_change' has 25 branches with max nesting of 21
+  Line: 474
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- Too Many Branches: Method 'detect_parallel_inheritance' has 13 branches with max nesting of 13
+  Line: 540
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_shotgun_surgery' has 8 branches with max nesting of 8
+  Line: 587
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_comments' has 9 branches with max nesting of 7
+  Line: 620
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_duplicate_code' has 6 branches with max nesting of 6
+  Line: 666
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_data_class' has 11 branches with max nesting of 9
+  Line: 707
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_dead_code' has 15 branches with max nesting of 14
+  Line: 751
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_lazy_class' has 6 branches with max nesting of 6
+  Line: 807
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_speculative_generality' has 9 branches with max nesting of 9
+  Line: 841
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_feature_envy' has 19 branches with max nesting of 16
+  Line: 884
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- Too Many Branches: Method 'detect_inappropriate_intimacy' has 21 branches with max nesting of 19
+  Line: 939
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- Too Many Branches: Method 'detect_message_chains' has 5 branches with max nesting of 5
+  Line: 1011
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_middle_man' has 19 branches with max nesting of 17
+  Line: 1066
+  File: ./src/code_quality_analyzer/code_smell_detector.py
+  Severity: High
+
+- Too Many Branches: Method 'analyze_file' has 20 branches with max nesting of 15
+  Line: 128
+  File: ./src/code_quality_analyzer/architectural_smell_detector.py
+  Severity: High
+
+- Too Many Branches: Method 'resolve_external_dependencies' has 9 branches with max nesting of 7
+  Line: 195
+  File: ./src/code_quality_analyzer/architectural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_hub_like_dependency' has 5 branches with max nesting of 5
+  Line: 260
+  File: ./src/code_quality_analyzer/architectural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_scattered_functionality' has 5 branches with max nesting of 5
+  Line: 305
+  File: ./src/code_quality_analyzer/architectural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_redundant_abstractions' has 8 branches with max nesting of 8
+  Line: 331
+  File: ./src/code_quality_analyzer/architectural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_improper_api_usage' has 4 branches with max nesting of 4
+  Line: 391
+  File: ./src/code_quality_analyzer/architectural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_cyclic_dependencies' has 5 branches with max nesting of 5
+  Line: 443
+  File: ./src/code_quality_analyzer/architectural_smell_detector.py
+  Severity: Medium
+
+- Too Many Branches: Method 'detect_unstable_dependencies' has 4 branches with max nesting of 4
+  Line: 495
+  File: ./src/code_quality_analyzer/architectural_smell_detector.py
+  Severity: Medium
 
 No code smells detected.
 
-No architectural smells detected.
 
+Architectural Smells:
+---------------------
+- Scattered Functionality: Function 'load_thresholds' appears in 3 modules: code_quality_analyzer.architectural_smell_detector, code_quality_analyzer.config_handler, code_quality_analyzer.structural_smell_detector
+- Scattered Functionality: Function 'print_report' appears in 3 modules: code_quality_analyzer.architectural_smell_detector, code_quality_analyzer.structural_smell_detector, code_quality_analyzer.code_smell_detector
+- Scattered Functionality: Function 'add_smell' appears in 3 modules: code_quality_analyzer.architectural_smell_detector, code_quality_analyzer.structural_smell_detector, code_quality_analyzer.code_smell_detector
+- Scattered Functionality: Function 'detect_smells' appears in 3 modules: code_quality_analyzer.architectural_smell_detector, code_quality_analyzer.structural_smell_detector, code_quality_analyzer.code_smell_detector
+- Scattered Functionality: Function 'config_handler' appears in 3 modules: tests.test_architectural_smell_detector, tests.test_structural_smell_detector, tests.test_code_smell_detector
+- God Object: Module 'code_quality_analyzer.structural_smell_detector' has too many public functions (29)
+- God Object: Module 'code_quality_analyzer.code_smell_detector' has too many public functions (30)
+- Potential Improper API Usage: Module 'tests.test_architectural_smell_detector' has repetitive API calls: write_text(5x), detect_smells(4x), join(3x)
+- Potential Improper API Usage: Module 'tests.test_code_smell_detector' has repetitive API calls: write_text(4x), detect_smells(4x)
+- Potential Improper API Usage: Module 'code_quality_analyzer.structural_smell_detector' has repetitive API calls: DiGraph(3x), info(6x), walk(11x), append(11x), get(24x), items(19x), nodes(5x), warning(7x), add_node(4x), values(4x), add_smell(17x), error(8x), endswith(7x), read(3x), splitlines(3x), rsplit(13x), lower(11x), add_edge(6x), startswith(25x), _get_base_object(5x), calculate_cyclomatic_complexity(3x), debug(3x), add(9x), _is_excluded_dependency(3x)
+- Potential Improper API Usage: Module 'code_quality_analyzer.code_smell_detector' has repetitive API calls: items(9x), nodes_of_class(8x), append(30x), startswith(20x), sub(3x), node_ancestors(3x), error(4x), add_smell(9x), mymethods(8x), values(4x), add(8x), endswith(15x), join(16x), lower(3x)
+- Potential Improper API Usage: Module 'code_quality_analyzer.main' has repetitive API calls: add_argument(10x), info(3x), warning(4x), detect_smells(3x), append(6x), error(10x), splitext(3x), get_thresholds(5x), writerow(3x)
+- Potential Improper API Usage: Module 'code_quality_analyzer.architectural_smell_detector' has repetitive API calls: dirname(4x), append(7x), get(20x), nodes(7x), items(9x), values(3x), in_degree(3x), out_degree(3x), join(7x), add_smell(8x), split(6x), add(5x), lower(5x), startswith(5x)
+- Potential Improper API Usage: Module 'code_quality_analyzer.config_handler' has repetitive API calls: get(5x), items(4x), error(3x)
+- Unstable Dependency: Module 'code_quality_analyzer.main' has high instability (0.90) with 9 outgoing and 1 incoming dependencies
 
 Summary:
 --------
-Total Structural Smells: 0
+Total Structural Smells: 94
 Total Code Smells: 0
-Total Architectural Smells: 0
+Total Architectural Smells: 15

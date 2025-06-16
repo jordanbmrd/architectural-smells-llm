@@ -1,0 +1,41 @@
+2025-06-13 13:58:23,004 - code_quality_analyzer.main - INFO - Loading configuration from: code_quality_config.yaml
+2025-06-13 13:58:23,005 - code_quality_analyzer.config_handler - ERROR - Configuration file not found: code_quality_config.yaml
+2025-06-13 13:58:23,005 - code_quality_analyzer.main - ERROR - Error during analysis: [Errno 2] No such file or directory: 'code_quality_config.yaml'
+Traceback (most recent call last):
+  File "/Users/polguillou/Desktop/DMU-Work/architectural-smells-llm/pyexamine/src/code_quality_analyzer/main.py", line 184, in analyze_project
+    config_handler = ConfigHandler(args.config)
+  File "/Users/polguillou/Desktop/DMU-Work/architectural-smells-llm/pyexamine/src/code_quality_analyzer/config_handler.py", line 19, in __init__
+    self.thresholds = self.load_thresholds()
+                      ~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/polguillou/Desktop/DMU-Work/architectural-smells-llm/pyexamine/src/code_quality_analyzer/config_handler.py", line 27, in load_thresholds
+    with open(self.config_path, 'r') as file:
+         ~~~~^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'code_quality_config.yaml'
+2025-06-13 13:58:24,572 - code_quality_analyzer.main - INFO - Loading configuration from: code_quality_config.yaml
+2025-06-13 13:58:24,572 - code_quality_analyzer.config_handler - ERROR - Configuration file not found: code_quality_config.yaml
+2025-06-13 13:58:24,572 - code_quality_analyzer.main - ERROR - Error during analysis: [Errno 2] No such file or directory: 'code_quality_config.yaml'
+Traceback (most recent call last):
+  File "/Users/polguillou/Desktop/DMU-Work/architectural-smells-llm/pyexamine/src/code_quality_analyzer/main.py", line 184, in analyze_project
+    config_handler = ConfigHandler(args.config)
+  File "/Users/polguillou/Desktop/DMU-Work/architectural-smells-llm/pyexamine/src/code_quality_analyzer/config_handler.py", line 19, in __init__
+    self.thresholds = self.load_thresholds()
+                      ~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/polguillou/Desktop/DMU-Work/architectural-smells-llm/pyexamine/src/code_quality_analyzer/config_handler.py", line 27, in load_thresholds
+    with open(self.config_path, 'r') as file:
+         ~~~~^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'code_quality_config.yaml'
+2025-06-13 13:58:26,236 - code_quality_analyzer.main - INFO - Loading configuration from: code_quality_config.yaml
+2025-06-13 13:58:26,237 - code_quality_analyzer.config_handler - ERROR - Configuration file not found: code_quality_config.yaml
+2025-06-13 13:58:26,237 - code_quality_analyzer.main - ERROR - Error during analysis: [Errno 2] No such file or directory: 'code_quality_config.yaml'
+Traceback (most recent call last):
+  File "/Users/polguillou/Desktop/DMU-Work/architectural-smells-llm/pyexamine/src/code_quality_analyzer/main.py", line 184, in analyze_project
+    config_handler = ConfigHandler(args.config)
+  File "/Users/polguillou/Desktop/DMU-Work/architectural-smells-llm/pyexamine/src/code_quality_analyzer/config_handler.py", line 19, in __init__
+    self.thresholds = self.load_thresholds()
+                      ~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/polguillou/Desktop/DMU-Work/architectural-smells-llm/pyexamine/src/code_quality_analyzer/config_handler.py", line 27, in load_thresholds
+    with open(self.config_path, 'r') as file:
+         ~~~~^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'code_quality_config.yaml'
+2025-06-13 13:58:27,820 - code_quality_analyzer.main - INFO - Loading configuration from: code_quality_config.yaml
+2025-06-13 13:58:27,820 - code_quality_analyzer.config_handler - ERROR - Configuration file not found: code_quality_config.yaml
