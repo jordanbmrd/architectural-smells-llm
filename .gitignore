@@ -11,3 +11,5 @@ __pycache__
 cloned_projects
 transformers
 optuna
+aioesphomeapi
+homeassistant-powercalc

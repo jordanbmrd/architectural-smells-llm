@@ -125,8 +125,8 @@ if __name__ == "__main__":
         print("⚠️ No tags/releases found.")
         sys.exit(0)
 
-    start_from_tag = "v4.52.0"
-    start_processing = True
+    start_from_tag = "v1.3.9"
+    start_processing = False
 
     for tag in tags:
         tag_name = tag["name"]

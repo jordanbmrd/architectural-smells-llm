@@ -132,12 +132,13 @@ def main():
     versions_data = analyze_versions(target_dir)
 
     if versions_data:
+        write_csv(versions_data, "Transformers_Dataset.csv")
         split_idx = int(len(versions_data) * 0.8)
         training_data = versions_data[:split_idx]
         test_data = versions_data[split_idx:]
 
-        write_csv(training_data, "Optuna_Training_Set.csv")
-        write_csv(test_data, "Optuna_Test_Set.csv")
+        write_csv(training_data, "Transformers_Training_Set.csv")
+        write_csv(test_data, "Transformers_Test_Set.csv")
 
         print("\n📈 Summary:")
         print(f"  - Total versions: {len(versions_data)}")
