@@ -126,7 +126,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     start_from_tag = "v1.3.9"
-    start_processing = False
+    start_processing = True
 
     for tag in tags:
         tag_name = tag["name"]
@@ -142,3 +142,14 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"⚠️ Skipping tag {tag_name} due to error: {e}\n")
 
+    # ✅ ✅ ✅ AJOUT ICI : déplacer le dossier après avoir tout téléchargé et analysé
+    final_destination = Path("first-LSTM-model") / "projects-scraped" / short_name
+    final_destination.parent.mkdir(parents=True, exist_ok=True)
+
+    if final_destination.exists():
+        print(f"🗑️ Removing existing folder: {final_destination}")
+        shutil.rmtree(final_destination)
+
+    print(f"📦 Moving {output_root} to {final_destination}")
+    shutil.move(str(output_root), str(final_destination))
+    print(f"✅ Project folder moved successfully!")

@@ -1,0 +1,6 @@
+Release version,Hub-like dependencies,Scattered functionality,Cyclic dependencies,God objects,Unstable dependencies,Improper API usage,Redundant abstractions,High cyclomatic complexity,Deep inheritance trees,High coupling,Low cohesion,Excessive fan-in_fan-out,Large file sizes,Complex conditional structures,Orphan modules
+v0.9.2,0,131,7,21,147,118,56,40,0,96,28,55,110,216,1
+v0.9.3,0,132,7,22,150,117,56,40,0,97,28,54,108,216,1
+v0.9.4,0,132,7,22,151,117,56,39,0,98,30,56,109,216,1
+v0.9.5,0,132,7,22,151,117,56,39,0,98,30,56,109,216,1
+v0.9.6,0,132,7,22,152,120,56,41,0,100,30,57,112,221,1

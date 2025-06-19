@@ -2,7 +2,6 @@
 """
 Script to consolidate code quality reports from all versions
 into a single CSV file with specified metrics, and split into training and test sets.
-Do not forget to change the output file name (line 39/1400).
 """
 
 import os
@@ -126,19 +125,31 @@ def main():
 
     target_dir = sys.argv[1]
 
+    # Nom de X = nom du dossier cible
+    X = Path(target_dir).name
+
+    # Dossier de sortie : training-testing-set/X
+    output_dir = Path("first-LSTM-model/training-testing-set") / X
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Définir les chemins de sortie
+    dataset_file = output_dir / f"{X}_Dataset.csv"
+    training_file = output_dir / f"{X}_Training_Set.csv"
+    test_file = output_dir / f"{X}_Test_Set.csv"
+
     print("🔍 Consolidating code quality reports")
     print("=" * 50)
 
     versions_data = analyze_versions(target_dir)
 
     if versions_data:
-        write_csv(versions_data, "Transformers_Dataset.csv")
+        write_csv(versions_data, dataset_file)
         split_idx = int(len(versions_data) * 0.8)
         training_data = versions_data[:split_idx]
         test_data = versions_data[split_idx:]
 
-        write_csv(training_data, "Transformers_Training_Set.csv")
-        write_csv(test_data, "Transformers_Test_Set.csv")
+        write_csv(training_data, training_file)
+        write_csv(test_data, test_file)
 
         print("\n📈 Summary:")
         print(f"  - Total versions: {len(versions_data)}")
