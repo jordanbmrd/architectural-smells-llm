@@ -39,7 +39,7 @@ def map_smells_to_columns(smell_counts):
         'Deep inheritance trees': 0,  # Not detected
         'High coupling': smell_counts.get('High Response for a Class (RFC)', 0),
         'Low cohesion': smell_counts.get('High Lack of Cohesion of Methods (LCOM)', 0),
-        'Excessive fan-in_fan-out': smell_counts.get('High Fan-in', 0) + smell_counts.get('High Fan-out', 0),
+        'Excessive fan-in_fan_out': smell_counts.get('High Fan-in', 0) + smell_counts.get('High Fan-out', 0),
         'Large file sizes': smell_counts.get('Long File', 0) + smell_counts.get('High Lines of Code (LOC)', 0),
         'Complex conditional structures': smell_counts.get('Too Many Branches', 0),
         'Orphan modules': smell_counts.get('Orphan Module', 0)
@@ -59,6 +59,15 @@ def analyze_versions(target_dir):
         print(f"The directory {versions_dir} does not exist!")
         return versions_data
 
+    # Nouveau : renommer les dossiers si besoin
+    for folder in versions_dir.iterdir():
+        if folder.is_dir() and not folder.name.startswith('v'):
+            new_name = f"v{folder.name}"
+            new_path = folder.parent / new_name
+            print(f"Renaming '{folder.name}' to '{new_name}'")
+            folder.rename(new_path)
+
+    # Après renommage, collecter les dossiers versionnés
     version_folders = [f for f in versions_dir.iterdir() if f.is_dir() and f.name.startswith('v')]
     version_folders = sorted(version_folders, key=lambda f: parse_version(f.name))
 
@@ -102,7 +111,7 @@ def write_csv(data, output_file):
         'Deep inheritance trees',
         'High coupling',
         'Low cohesion',
-        'Excessive fan-in_fan-out',
+        'Excessive fan-in_fan_out',
         'Large file sizes',
         'Complex conditional structures',
         'Orphan modules'
@@ -125,14 +134,10 @@ def main():
 
     target_dir = sys.argv[1]
 
-    # Nom de X = nom du dossier cible
     X = Path(target_dir).name
-
-    # Dossier de sortie : training-testing-set/X
     output_dir = Path("first-LSTM-model/training-testing-set") / X
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Définir les chemins de sortie
     dataset_file = output_dir / f"{X}_Dataset.csv"
     training_file = output_dir / f"{X}_Training_Set.csv"
     test_file = output_dir / f"{X}_Test_Set.csv"
