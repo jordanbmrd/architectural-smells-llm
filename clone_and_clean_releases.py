@@ -143,7 +143,7 @@ if __name__ == "__main__":
             print(f"⚠️ Skipping tag {tag_name} due to error: {e}\n")
 
     # ✅ ✅ ✅ AJOUT ICI : déplacer le dossier après avoir tout téléchargé et analysé
-    final_destination = Path("first-LSTM-model") / "projects-scraped" / short_name
+    final_destination = Path("AI-model") / "projects-scraped" / short_name
     final_destination.parent.mkdir(parents=True, exist_ok=True)
 
     if final_destination.exists():

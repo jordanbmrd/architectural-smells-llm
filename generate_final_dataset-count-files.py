@@ -146,7 +146,7 @@ def main():
     target_dir = sys.argv[1]
 
     X = Path(target_dir).name
-    output_dir = Path("first-LSTM-model/training-testing-set-count-files") / X
+    output_dir = Path("AI-model/training-testing-set-count-files") / X
     output_dir.mkdir(parents=True, exist_ok=True)
 
     dataset_file = output_dir / f"{X}_Dataset.csv"
