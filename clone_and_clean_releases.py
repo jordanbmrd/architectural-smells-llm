@@ -126,7 +126,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     start_from_tag = "1.45.1.dev20250511"
-    start_processing = False
+    start_processing = True
 
     for tag in tags:
         tag_name = tag["name"]
