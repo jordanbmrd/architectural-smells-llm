@@ -8,8 +8,43 @@ import os
 import csv
 import glob
 import sys
+import re
 from collections import defaultdict, Counter
 from pathlib import Path
+
+def clean_file_path(file_path):
+    """
+    Nettoie le file_path pour ne garder que la partie après vX.X.X/
+    
+    Args:
+        file_path (str): Chemin complet du fichier
+        
+    Returns:
+        str: Chemin nettoyé sans la partie version
+    """
+    try:
+        # Chercher l'index de la dernière occurrence d'un pattern vX.X.X/
+        # Plus simple et plus robuste que regex
+        parts = file_path.split('/')
+        version_index = -1
+        
+        for i, part in enumerate(parts):
+            if part.startswith('v') and '.' in part:
+                # Vérifier si c'est un pattern de version simple
+                version_parts = part.split('.')
+                if len(version_parts) >= 2:  # Au moins vX.X
+                    version_index = i
+        
+        if version_index >= 0 and version_index < len(parts) - 1:
+            # Prendre tout après l'index de version
+            return '/'.join(parts[version_index + 1:])
+        else:
+            # Retourner le chemin original si pas de version trouvée
+            return file_path
+            
+    except Exception as e:
+        print(f"Erreur dans clean_file_path: {e}")
+        return file_path
 
 def extract_smells_from_csv(csv_file_path, version):
     """
@@ -30,22 +65,29 @@ def extract_smells_from_csv(csv_file_path, version):
             
             for row in reader:
                 # Créer un identifiant unique pour le smell (file_path/module_class/smell_type)
-                file_path = row.get('File', '').strip()
+                file_path_raw = row.get('File', '').strip()
                 smell_name = row.get('Name', '').strip()
                 module_class = row.get('Module/Class', '').strip()
                 severity = row.get('Severity', '').strip()
                 
-                if file_path and smell_name:
+                if file_path_raw and smell_name:
+                    # Nettoyer le file_path pour ne garder que la partie après vX.X.X/
+                    file_path = clean_file_path(file_path_raw)
+                    # Debug: vérifier le résultat
+                    print(f"DEBUG: file_path_raw='{file_path_raw}' -> file_path='{file_path}' (type: {type(file_path)})")
+                    if str(file_path).startswith('<function'):
+                        print(f"ERREUR: La fonction est assignée au lieu du résultat!")
+                        file_path = file_path_raw  # Fallback au path original
                     # Créer l'ID du smell (format: file/module-class/smell-type) - tout collé sans espaces
                     # Nettoyer les espaces dans tous les composants
-                    clean_file_path = file_path.replace(" ", "")
+                    clean_file_path_no_spaces = file_path.replace(" ", "")
                     clean_module_class = module_class.replace(" ", "") if module_class else ""
                     clean_smell_name = smell_name.replace(" ", "")
                     
                     if clean_module_class:
-                        smell_id = f"{clean_file_path}/{clean_module_class}/{clean_smell_name}"
+                        smell_id = f"{clean_file_path_no_spaces}/{clean_module_class}/{clean_smell_name}"
                     else:
-                        smell_id = f"{clean_file_path}//{clean_smell_name}"  # Double slash si pas de module
+                        smell_id = f"{clean_file_path_no_spaces}//{clean_smell_name}"  # Double slash si pas de module
                     
                     smell_data = {
                         'version': version,
@@ -86,8 +128,10 @@ def collect_all_smells_data(versions_directory):
     version_folders = [f for f in versions_dir.iterdir() if f.is_dir() and f.name.startswith('v')]
     sorted_versions = sorted(version_folders, key=lambda x: x.name)
     
-    # Parcourir toutes les versions
-    for version_folder in sorted_versions:
+    # Parcourir toutes les versions SAUF la dernière
+    versions_to_process = sorted_versions[:-1] if len(sorted_versions) > 1 else sorted_versions
+    
+    for version_folder in versions_to_process:
         version_name = version_folder.name
         csv_file = version_folder / "code_quality_report.csv"
         
@@ -108,36 +152,39 @@ def collect_all_smells_data(versions_directory):
     
     return all_smells, version_smells_map, [v.name for v in sorted_versions]
 
-def remove_duplicate_smell_ids(all_smells):
+def remove_duplicate_smell_ids_within_version(all_smells):
     """
-    Enlève les doublons basés sur le smell_id, en gardant la première occurrence.
+    Enlève les doublons basés sur (version, smell_id), en gardant la première occurrence.
+    Les mêmes smell_id peuvent exister dans différentes versions.
     
     Args:
         all_smells (list): Liste de tous les smells
         
     Returns:
-        list: Liste des smells sans doublons
+        list: Liste des smells sans doublons au sein de chaque version
     """
-    seen_smell_ids = set()
+    seen_version_smell_ids = set()
     unique_smells = []
     duplicates_count = 0
     
     for smell in all_smells:
-        smell_id = smell['id_smell']
-        if smell_id not in seen_smell_ids:
-            seen_smell_ids.add(smell_id)
+        # Créer une clé unique (version, smell_id)
+        version_smell_key = (smell['version'], smell['id_smell'])
+        
+        if version_smell_key not in seen_version_smell_ids:
+            seen_version_smell_ids.add(version_smell_key)
             unique_smells.append(smell)
         else:
             duplicates_count += 1
     
-    print(f"🔄 Doublons supprimés: {duplicates_count} smells dupliqués")
+    print(f"🔄 Doublons supprimés (au sein de chaque version): {duplicates_count} smells dupliqués")
     print(f"📊 Smells uniques conservés: {len(unique_smells)}")
     
     return unique_smells
 
 def calculate_version_counts_and_next_version_presence(all_smells, version_smells_map, sorted_versions):
     """
-    Calcule le nombre de versions où chaque smell apparaît et s'il est présent dans la version suivante.
+    Calcule le nombre de versions PRÉCÉDENTES où chaque smell apparaît et s'il est présent dans la version suivante.
     
     Args:
         all_smells (list): Liste de tous les smells
@@ -147,11 +194,6 @@ def calculate_version_counts_and_next_version_presence(all_smells, version_smell
     Returns:
         list: Liste enrichie des smells avec les nouvelles colonnes
     """
-    # Compter les occurrences de chaque smell_id
-    smell_version_counts = defaultdict(int)
-    for smell in all_smells:
-        smell_version_counts[smell['id_smell']] += 1
-    
     # Créer un mapping version -> index pour faciliter les recherches
     version_index = {version: i for i, version in enumerate(sorted_versions)}
     
@@ -161,19 +203,25 @@ def calculate_version_counts_and_next_version_presence(all_smells, version_smell
         current_version = smell['version']
         smell_id = smell['id_smell']
         
-        # Compter dans combien de versions ce smell apparaît
-        count_versions = smell_version_counts[smell_id]
+        # Compter dans combien de versions PRÉCÉDENTES ce smell apparaît
+        current_index = version_index.get(current_version, -1)
+        count_previous_versions = 0
+        
+        if current_index > 0:  # Il y a des versions précédentes
+            for i in range(current_index):  # Parcourir toutes les versions précédentes
+                previous_version = sorted_versions[i]
+                if smell_id in version_smells_map.get(previous_version, set()):
+                    count_previous_versions += 1
         
         # Vérifier si le smell est présent dans la version suivante
         present_in_next = False
-        current_index = version_index.get(current_version, -1)
         if current_index >= 0 and current_index < len(sorted_versions) - 1:
             next_version = sorted_versions[current_index + 1]
             present_in_next = smell_id in version_smells_map.get(next_version, set())
         
         # Créer l'enregistrement enrichi
         enriched_smell = smell.copy()
-        enriched_smell['count_versions_appears'] = count_versions
+        enriched_smell['count_versions_appears'] = count_previous_versions
         enriched_smell['present_in_next_version'] = 1 if present_in_next else 0
         
         enriched_smells.append(enriched_smell)
@@ -260,9 +308,9 @@ def main():
         print("❌ Aucune donnée trouvée!")
         return
     
-    # Étape 2: Supprimer les doublons
-    print("\n🧹 Étape 2: Suppression des doublons...")
-    all_smells = remove_duplicate_smell_ids(all_smells)
+    # Étape 2: Supprimer les doublons au sein de chaque version
+    print("\n🧹 Étape 2: Suppression des doublons au sein de chaque version...")
+    all_smells = remove_duplicate_smell_ids_within_version(all_smells)
     
     # Étape 3: Calculer les comptes et la présence dans la version suivante
     print("\n📊 Étape 3: Calcul des métriques...")
