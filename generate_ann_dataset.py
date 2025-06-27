@@ -12,35 +12,78 @@ import re
 from collections import defaultdict, Counter
 from pathlib import Path
 
+def parse_version(version_name):
+    """
+    Parse une version pour permettre un tri numérique correct.
+    
+    Args:
+        version_name (str): Nom de version (ex: "v4.9.1", "v4.50.0")
+        
+    Returns:
+        tuple: Tuple de nombres pour le tri (ex: (4, 9, 1))
+    """
+    try:
+        # Enlever le 'v' du début et séparer par '.'
+        version_parts = version_name[1:].split('.')
+        # Convertir chaque partie en entier, avec 0 par défaut
+        numeric_parts = []
+        for part in version_parts:
+            # Enlever les suffixes non-numériques (ex: "rc6", "beta")
+            numeric_part = ''
+            for char in part:
+                if char.isdigit():
+                    numeric_part += char
+                else:
+                    break
+            numeric_parts.append(int(numeric_part) if numeric_part else 0)
+        
+        # Assurer au moins 3 parties pour la comparaison (major.minor.patch)
+        while len(numeric_parts) < 3:
+            numeric_parts.append(0)
+            
+        return tuple(numeric_parts)
+    except:
+        # En cas d'erreur, retourner (0, 0, 0) pour mettre à la fin
+        return (0, 0, 0)
+
 def clean_file_path(file_path):
     """
-    Nettoie le file_path pour ne garder que la partie après vX.X.X/
+    Nettoie le file_path pour ne garder que la partie relative après le nom du projet et la version.
+    Enlève tout le chemin absolu et la partie projet/vX.X.X/
     
     Args:
         file_path (str): Chemin complet du fichier
         
     Returns:
-        str: Chemin nettoyé sans la partie version
+        str: Chemin relatif nettoyé
     """
     try:
+        # Normaliser les chemins en utilisant des séparateurs unix
+        normalized_path = file_path.replace('\\', '/')
+        parts = normalized_path.split('/')
+        
         # Chercher l'index de la dernière occurrence d'un pattern vX.X.X/
-        # Plus simple et plus robuste que regex
-        parts = file_path.split('/')
         version_index = -1
         
         for i, part in enumerate(parts):
             if part.startswith('v') and '.' in part:
-                # Vérifier si c'est un pattern de version simple
-                version_parts = part.split('.')
-                if len(version_parts) >= 2:  # Au moins vX.X
+                # Vérifier si c'est un pattern de version (vX.X.X)
+                version_part = part.split('.')[0][1:]  # Enlever le 'v' et prendre la première partie
+                if version_part.isdigit():  # Vérifier que c'est bien numérique
                     version_index = i
         
         if version_index >= 0 and version_index < len(parts) - 1:
             # Prendre tout après l'index de version
-            return '/'.join(parts[version_index + 1:])
+            relative_path = '/'.join(parts[version_index + 1:])
+            return relative_path
         else:
-            # Retourner le chemin original si pas de version trouvée
-            return file_path
+            # Si pas de version trouvée, essayer d'enlever juste les parties qui ressemblent à des chemins absolus
+            # Garder seulement les dernières parties qui ressemblent à un chemin de fichier
+            if len(parts) > 2:
+                # Prendre les 3 dernières parties par défaut si pas de version trouvée
+                return '/'.join(parts[-3:])
+            else:
+                return file_path
             
     except Exception as e:
         print(f"Erreur dans clean_file_path: {e}")
@@ -70,7 +113,7 @@ def extract_smells_from_csv(csv_file_path, version):
                 module_class = row.get('Module/Class', '').strip()
                 severity = row.get('Severity', '').strip()
                 
-                if file_path_raw and smell_name:
+                if file_path_raw and smell_name and file_path_raw.strip().lower() != "unknown":
                     # Nettoyer le file_path pour ne garder que la partie après vX.X.X/
                     file_path = clean_file_path(file_path_raw)
                     # Debug: vérifier le résultat
@@ -124,9 +167,9 @@ def collect_all_smells_data(versions_directory):
         print(f"Le dossier {versions_dir} n'existe pas!")
         return [], {}, []
     
-    # Collecter toutes les versions et les trier
+    # Collecter toutes les versions et les trier numériquement
     version_folders = [f for f in versions_dir.iterdir() if f.is_dir() and f.name.startswith('v')]
-    sorted_versions = sorted(version_folders, key=lambda x: x.name)
+    sorted_versions = sorted(version_folders, key=lambda x: parse_version(x.name))
     
     # Parcourir toutes les versions SAUF la dernière
     versions_to_process = sorted_versions[:-1] if len(sorted_versions) > 1 else sorted_versions
