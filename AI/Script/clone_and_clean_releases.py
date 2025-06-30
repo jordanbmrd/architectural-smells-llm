@@ -1,5 +1,25 @@
 #!/usr/bin/env python3
 
+"""
+This script automates the collection and cleaning of source code
+from all tagged releases of a public GitHub repository.
+
+It performs the following steps for each release (tag):
+1. Downloads the source code archive via the GitHub API.
+2. Extracts and normalizes the folder structure.
+3. Removes all non-Python files and empty directories.
+4. Runs a static analysis script (`run_analysis.sh`) to generate a code quality report.
+5. Cleans the folder by keeping only the generated report (`code_quality_report.csv`).
+6. Repeats the process for all tags (from oldest to newest).
+7. Finally, moves the cleaned project folder to `AI/Project-scraped/<project_name>/`.
+
+Usage:
+    python clone_and_clean_releases.py <GitHub repo URL>
+
+Example:
+    python clone_and_clean_releases.py https://github.com/pytorch/pytorch.git
+"""
+
 import os
 import sys
 import requests
@@ -42,15 +62,13 @@ def get_all_tags(repo_full_name: str) -> list[dict]:
             break
         tags.extend(page_data)
         page += 1
-    return tags[::-1]  # Oldest to newest
+    return tags[::-1]  # From oldest to newest
 
 def download_and_extract_zip(zip_url: str, extract_to: Path):
     temp_zip = extract_to / "temp_release.zip"
     try:
         with requests.get(zip_url, stream=True) as r:
             r.raise_for_status()
-
-            # Vérifie le type de contenu
             content_type = r.headers.get("Content-Type", "")
             if "zip" not in content_type and "octet-stream" not in content_type:
                 raise ValueError(f"Unexpected content type: {content_type}")
@@ -74,7 +92,6 @@ def download_and_extract_zip(zip_url: str, extract_to: Path):
         if temp_zip.exists():
             temp_zip.unlink()
 
-
 def process_tag(repo_full_name: str, tag: dict, root_dir: Path):
     tag_name = tag["name"]
     release_dir = root_dir / tag_name
@@ -87,7 +104,7 @@ def process_tag(repo_full_name: str, tag: dict, root_dir: Path):
     print(f"⬇️ Downloading tag {tag_name}")
     download_and_extract_zip(zipball_url, release_dir)
 
-    # Move nested folder content up
+    # Move content of nested folder to root
     subdirs = list(release_dir.iterdir())
     if len(subdirs) == 1 and subdirs[0].is_dir():
         for item in subdirs[0].iterdir():
@@ -112,7 +129,7 @@ def process_tag(repo_full_name: str, tag: dict, root_dir: Path):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("❌ Usage: python clone_and_analyze.py <GitHub repo URL>")
+        print("❌ Usage: python clone_and_clean_releases.py <GitHub repo URL>")
         sys.exit(1)
 
     repo_url = sys.argv[1]
@@ -125,6 +142,7 @@ if __name__ == "__main__":
         print("⚠️ No tags/releases found.")
         sys.exit(0)
 
+    # Optional: skip old versions until a specific tag is reached
     start_from_tag = "1.45.1.dev20250511"
     start_processing = True
 
@@ -142,8 +160,8 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"⚠️ Skipping tag {tag_name} due to error: {e}\n")
 
-    # ✅ ✅ ✅ AJOUT ICI : déplacer le dossier après avoir tout téléchargé et analysé
-    final_destination = Path("AI-model") / "projects-scraped" / short_name
+    # Move processed project folder into final destination
+    final_destination = Path("AI") / "Project-scraped" / short_name
     final_destination.parent.mkdir(parents=True, exist_ok=True)
 
     if final_destination.exists():

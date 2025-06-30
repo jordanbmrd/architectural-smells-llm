@@ -5,7 +5,6 @@ into a single CSV file with smell counts per file per version,
 and split into training and test sets.
 """
 
-import os
 import sys
 import csv
 import re
@@ -13,10 +12,6 @@ from collections import defaultdict
 from pathlib import Path
 
 def count_smells_per_file(csv_file_path):
-    """
-    Return a dict:
-        { file_path: {smell_name: count, ...} }
-    """
     file_smells = defaultdict(lambda: defaultdict(int))
     try:
         with open(csv_file_path, 'r', encoding='utf-8') as file:
@@ -33,9 +28,6 @@ def count_smells_per_file(csv_file_path):
     return file_smells
 
 def map_smells_to_columns(smell_counts):
-    """
-    Map raw smell names to consolidated smell types.
-    """
     return {
         'Hub-like dependencies': smell_counts.get('Hub-like Dependency', 0),
         'Scattered functionality': smell_counts.get('Scattered Functionality', 0),
@@ -60,9 +52,6 @@ def parse_version(version_name):
     return tuple(int(p) if p.isdigit() else 0 for p in parts)
 
 def analyze_versions(target_dir):
-    """
-    Returns a list of rows: one per (version, file)
-    """
     all_data = []
     versions_dir = Path(target_dir)
 
@@ -70,7 +59,6 @@ def analyze_versions(target_dir):
         print(f"The directory {versions_dir} does not exist!")
         return all_data
 
-    # Rename folders if necessary
     for folder in versions_dir.iterdir():
         if folder.is_dir() and not folder.name.startswith('v'):
             new_name = f"v{folder.name}"
@@ -105,7 +93,7 @@ def analyze_versions(target_dir):
 
 def write_csv(data, output_file):
     if not data:
-        print(f"No data for {output_file}")
+        print(f"No data to write for {output_file}")
         return
 
     fieldnames = [
@@ -134,45 +122,41 @@ def write_csv(data, output_file):
             writer.writeheader()
             for row in data:
                 writer.writerow(row)
-        print(f"✅ File generated: {output_file} ({len(data)} rows)")
+        print(f"✅ File written: {output_file} ({len(data)} rows)")
     except Exception as e:
         print(f"❌ Error writing {output_file}: {e}")
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python script.py <directory_to_process>")
+        print("Usage: python generate_final_dataset-count-files.py <path_to_project_versions>")
         sys.exit(1)
 
     target_dir = sys.argv[1]
-
-    X = Path(target_dir).name
-    output_dir = Path("AI-model/training-testing-set-count-files") / X
+    project_name = Path(target_dir).name
+    output_dir = Path("AI/Dataset/training-testing-set-count-files") / project_name
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    dataset_file = output_dir / f"{X}_Dataset.csv"
-    training_file = output_dir / f"{X}_Training_Set.csv"
-    test_file = output_dir / f"{X}_Test_Set.csv"
+    dataset_file = output_dir / f"{project_name}_Dataset.csv"
+    training_file = output_dir / f"{project_name}_Training_Set.csv"
+    test_file = output_dir / f"{project_name}_Test_Set.csv"
 
-    print("🔍 Consolidating code quality reports by file")
-    print("=" * 50)
+    print("🔍 Consolidating smell counts per file across versions")
+    print("=" * 60)
 
     data = analyze_versions(target_dir)
 
     if data:
         write_csv(data, dataset_file)
         split_idx = int(len(data) * 0.8)
-        training_data = data[:split_idx]
-        test_data = data[split_idx:]
+        write_csv(data[:split_idx], training_file)
+        write_csv(data[split_idx:], test_file)
 
-        write_csv(training_data, training_file)
-        write_csv(test_data, test_file)
-
-        print("\n📈 Summary:")
-        print(f"  - Total file-version rows: {len(data)}")
-        print(f"  - Training set: {len(training_data)}")
-        print(f"  - Test set: {len(test_data)}")
+        print("\n📊 Summary:")
+        print(f"  - Total rows: {len(data)}")
+        print(f"  - Training set: {split_idx}")
+        print(f"  - Test set: {len(data) - split_idx}")
     else:
-        print("❌ No data to consolidate!")
+        print("❌ No data to process.")
 
 if __name__ == "__main__":
     main()

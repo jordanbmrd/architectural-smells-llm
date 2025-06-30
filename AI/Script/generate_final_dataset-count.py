@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
 """
-Script to consolidate code quality reports from all versions
-into a single CSV file with specified metrics, and split into training and test sets.
+This script consolidates all smell reports (`code_quality_report.csv`)
+from the different versions of a given project into a single dataset.
+
+It generates a single CSV file with the total number of smells
+(per smell type) per version, allowing for high-level statistical analysis
+of smell evolution across releases.
+
+The output is then split into a training and test set (80/20)
+to be used in supervised learning models.
 """
 
-import os
 import sys
 import csv
 import re
@@ -27,7 +33,7 @@ def count_smells_by_type(csv_file_path):
     return smell_counts
 
 def map_smells_to_columns(smell_counts):
-    column_mapping = {
+    return {
         'Hub-like dependencies': smell_counts.get('Hub-like Dependency', 0),
         'Scattered functionality': smell_counts.get('Scattered Functionality', 0),
         'Cyclic dependencies': smell_counts.get('Cyclic Dependency', 0),
@@ -36,7 +42,7 @@ def map_smells_to_columns(smell_counts):
         'Improper API usage': smell_counts.get('Potential Improper API Usage', 0),
         'Redundant abstractions': smell_counts.get('Potential Redundant Abstractions', 0),
         'High cyclomatic complexity': smell_counts.get('High Cyclomatic Complexity', 0),
-        'Deep inheritance trees': 0,  # Not detected
+        'Deep inheritance trees': 0,  # Not detected by the tool
         'High coupling': smell_counts.get('High Response for a Class (RFC)', 0),
         'Low cohesion': smell_counts.get('High Lack of Cohesion of Methods (LCOM)', 0),
         'Excessive fan-in_fan_out': smell_counts.get('High Fan-in', 0) + smell_counts.get('High Fan-out', 0),
@@ -44,7 +50,6 @@ def map_smells_to_columns(smell_counts):
         'Complex conditional structures': smell_counts.get('Too Many Branches', 0),
         'Orphan modules': smell_counts.get('Orphan Module', 0)
     }
-    return column_mapping
 
 def parse_version(version_name):
     version_name = version_name.lstrip('v')
@@ -59,7 +64,6 @@ def analyze_versions(target_dir):
         print(f"The directory {versions_dir} does not exist!")
         return versions_data
 
-    # Nouveau : renommer les dossiers si besoin
     for folder in versions_dir.iterdir():
         if folder.is_dir() and not folder.name.startswith('v'):
             new_name = f"v{folder.name}"
@@ -67,7 +71,6 @@ def analyze_versions(target_dir):
             print(f"Renaming '{folder.name}' to '{new_name}'")
             folder.rename(new_path)
 
-    # Après renommage, collecter les dossiers versionnés
     version_folders = [f for f in versions_dir.iterdir() if f.is_dir() and f.name.startswith('v')]
     version_folders = sorted(version_folders, key=lambda f: parse_version(f.name))
 
@@ -77,17 +80,14 @@ def analyze_versions(target_dir):
 
         if csv_file.exists():
             print(f"Analyzing version {version_name}...")
-
             smell_counts = count_smells_by_type(csv_file)
             column_data = map_smells_to_columns(smell_counts)
             row_data = {'Release version': version_name}
             row_data.update(column_data)
-
             versions_data.append(row_data)
 
-            total_smells = sum(smell_counts.values())
-            print(f"  - Total smells detected: {total_smells}")
-            print(f"  - Smell breakdown: {dict(smell_counts)}")
+            print(f"  - Total smells: {sum(smell_counts.values())}")
+            print(f"  - Breakdown: {dict(smell_counts)}")
         else:
             print(f"No code_quality_report.csv found for {version_name}")
 
@@ -95,7 +95,7 @@ def analyze_versions(target_dir):
 
 def write_csv(data, output_file):
     if not data:
-        print(f"No data for {output_file}")
+        print(f"No data to write for {output_file}")
         return
 
     fieldnames = [
@@ -123,45 +123,41 @@ def write_csv(data, output_file):
             writer.writeheader()
             for row in data:
                 writer.writerow(row)
-        print(f"✅ File generated: {output_file} ({len(data)} rows)")
+        print(f"✅ File saved: {output_file} ({len(data)} rows)")
     except Exception as e:
-        print(f"❌ Error writing {output_file}: {e}")
+        print(f"❌ Error writing file: {e}")
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python script.py <directory_to_process>")
+        print("Usage: python generate_final_dataset-count.py <path_to_versions>")
         sys.exit(1)
 
     target_dir = sys.argv[1]
-
-    X = Path(target_dir).name
-    output_dir = Path("AI-model/training-testing-set") / X
+    project_name = Path(target_dir).name
+    output_dir = Path("AI/Dataset/training-testing-set") / project_name
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    dataset_file = output_dir / f"{X}_Dataset.csv"
-    training_file = output_dir / f"{X}_Training_Set.csv"
-    test_file = output_dir / f"{X}_Test_Set.csv"
+    dataset_file = output_dir / f"{project_name}_Dataset.csv"
+    training_file = output_dir / f"{project_name}_Training_Set.csv"
+    test_file = output_dir / f"{project_name}_Test_Set.csv"
 
-    print("🔍 Consolidating code quality reports")
-    print("=" * 50)
+    print("🔍 Starting smell aggregation per version")
+    print("=" * 60)
 
     versions_data = analyze_versions(target_dir)
 
     if versions_data:
         write_csv(versions_data, dataset_file)
         split_idx = int(len(versions_data) * 0.8)
-        training_data = versions_data[:split_idx]
-        test_data = versions_data[split_idx:]
+        write_csv(versions_data[:split_idx], training_file)
+        write_csv(versions_data[split_idx:], test_file)
 
-        write_csv(training_data, training_file)
-        write_csv(test_data, test_file)
-
-        print("\n📈 Summary:")
+        print("\n📊 Summary:")
         print(f"  - Total versions: {len(versions_data)}")
-        print(f"  - Training set: {len(training_data)}")
-        print(f"  - Test set: {len(test_data)}")
+        print(f"  - Training set: {split_idx}")
+        print(f"  - Test set: {len(versions_data) - split_idx}")
     else:
-        print("❌ No data to consolidate!")
+        print("❌ No data to process.")
 
 if __name__ == "__main__":
     main()
