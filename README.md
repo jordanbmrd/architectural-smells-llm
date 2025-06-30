@@ -1,8 +1,8 @@
-# Code Quality Analysis & Code Smell Prediction Research Platform
+# Architectural Smell Prediction Research Project
 
 ## 📖 Overview
 
-This research project develops a comprehensive platform for code quality analysis and prediction of **code smell** evolution in Python open source projects. It combines multiple technological approaches: traditional static analysis, machine learning (LSTM), and generative artificial intelligence (LLM).
+This research project develops a comprehensive platform for code quality analysis and prediction of **architectural smell** evolution in Python open source projects. It combines multiple technological approaches: traditional static analysis, machine learning (LSTM), and generative artificial intelligence (LLM).
 
 ## 🏗️ Project Architecture
 
