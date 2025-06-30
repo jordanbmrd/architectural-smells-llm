@@ -116,7 +116,7 @@ def process_tag(repo_full_name: str, tag: dict, root_dir: Path):
     delete_empty_dirs(release_dir)
 
     print(f"🚀 Running analysis for {tag_name}")
-    subprocess.run(["./run_analysis.sh", str(release_dir)], cwd=Path.cwd(), check=True)
+    subprocess.run([str(Path(__file__).parent / "run_analysis.sh"), str(release_dir)], cwd=Path(__file__).parent, check=True)
 
     print(f"🧼 Cleaning folder after analysis...")
     for item in release_dir.iterdir():
