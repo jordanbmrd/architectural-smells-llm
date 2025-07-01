@@ -60,6 +60,8 @@ XAI_API_KEY=your_api_key_here
 
 ### 1. Code Quality Analysis with PyExamine
 
+This analysis is automatically made by script in step 2 on every release.
+
 ```bash
 # Complete project analysis
 analyze_code_quality /path/to/project --config code_quality_config.yaml
