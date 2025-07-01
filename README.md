@@ -126,24 +126,25 @@ AI/Dataset/
 
 ### PyExamine - Smell Detection
 
-#### Detected Code Smells
-- **Long Method**: Methods too long (> 45 lines)
-- **Large Class**: Classes with too many methods (> 15)
-- **Feature Envy**: Methods excessively using other classes
-- **Data Clumps**: Repeated parameter groups
-- **Primitive Obsession**: Excessive use of primitive types
-
 #### Architectural Smells
-- **Cyclic Dependency**: Circular dependencies between modules
-- **God Object**: Classes with too many responsibilities
-- **Hub-like Dependency**: Over-centralized components
-- **Unstable Dependency**: Dependencies on unstable components
+
+- Hub-like dependencies
+- Scattered functionality
+- Cyclic dependencies
+- God objects
+- Unstable dependencies
+- Improper API usage
+- Redundant abstractions
 
 #### Structural Smells
-- **High Cyclomatic Complexity**: Complexity > 10
-- **Deep Inheritance**: Hierarchy > 6 levels
-- **High Coupling (CBO)**: High coupling between objects
-- **Low Cohesion (LCOM)**: Low method cohesion
+
+- High cyclomatic complexity
+- Deep inheritance trees
+- High coupling (CBO)
+- Low cohesion (LCOM)
+- Excessive fan-in/fan-out
+- Large file sizes
+- Complex conditional structures
 
 ### Machine Learning Models
 
