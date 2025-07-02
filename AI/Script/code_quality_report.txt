@@ -1,0 +1,46 @@
+Code Quality Analysis Report
+============================
+
+Structural Smells:
+-------------------
+- High Number of Classes (NOC): Project has 17.3 weighted classes:
+- Regular classes: 17
+- Abstract/Interface classes: 0
+- Utility classes: 1
+- Test classes: 3 (not counted in weighted total)
+Adjusted threshold: 7
+  File: /Users/polguillou/Desktop/DMU-Work/architectural-smells-llm/netdisco/3.0.0
+  Severity: High
+
+- Too Many Branches: Method 'start' has 11 branches with max nesting of 7
+  Line: 46
+  File: /Users/polguillou/Desktop/DMU-Work/architectural-smells-llm/netdisco/3.0.0/netdisco/mdns.py
+  Severity: Medium
+
+No code smells detected.
+
+
+Architectural Smells:
+---------------------
+- Scattered Functionality: Function 'stop' appears in 3 modules: netdisco.service, netdisco.discovery, netdisco.mdns
+- Scattered Functionality: Function 'get_entries' appears in 6 modules: netdisco.discovery, discoverables.frontier_silicon, discoverables.openhome, discoverables.yamaha, discoverables.__init__, discoverables.sabnzbd
+- Potential Improper API Usage: Module 'netdisco.ssdp' has repetitive API calls: update(4x), now(6x), get(9x), format(4x), close(3x), debug(3x), getLogger(4x)
+- Potential Improper API Usage: Module 'tests.test_xboxone' has repetitive API calls: assertEqual(8x), verify_packet(3x)
+- Potential Improper API Usage: Module 'discoverables.test_yamaha' has repetitive API calls: assertEqual(5x), info_from_entry(4x)
+- Orphan Module: 'netdisco.const' is isolated from other modules
+- Orphan Module: 'discoverables.enigma2' is isolated from other modules
+- Orphan Module: 'discoverables.frontier_silicon' is isolated from other modules
+- Orphan Module: 'discoverables.openhome' is isolated from other modules
+- Orphan Module: 'discoverables.yamaha' is isolated from other modules
+- Orphan Module: 'discoverables.lg_smart_device' is isolated from other modules
+- Orphan Module: 'discoverables.sabnzbd' is isolated from other modules
+- Orphan Module: 'discoverables.bose_soundtouch' is isolated from other modules
+- Orphan Module: 'discoverables.bluesound' is isolated from other modules
+- Unstable Dependency: Module 'netdisco.service' has high instability (0.86) with 6 outgoing and 1 incoming dependencies
+- Unstable Dependency: Module 'netdisco.ssdp' has high instability (0.92) with 11 outgoing and 1 incoming dependencies
+
+Summary:
+--------
+Total Structural Smells: 2
+Total Code Smells: 0
+Total Architectural Smells: 16

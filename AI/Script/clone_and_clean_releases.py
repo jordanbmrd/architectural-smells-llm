@@ -11,7 +11,7 @@ It performs the following steps for each release (tag):
 4. Runs a static analysis script (`run_analysis.sh`) to generate a code quality report.
 5. Cleans the folder by keeping only the generated report (`code_quality_report.csv`).
 6. Repeats the process for all tags (from oldest to newest).
-7. Finally, moves the cleaned project folder to `AI/Project-scraped/<project_name>/`.
+7. Finally, moves the cleaned project folder to `AI/Projects-scraped/<project_name>/`.
 
 Usage:
     python clone_and_clean_releases.py <GitHub repo URL>
@@ -127,6 +127,17 @@ def process_tag(repo_full_name: str, tag: dict, root_dir: Path):
                 shutil.rmtree(item)
     print(f"✅ Done with {tag_name}\n")
 
+def ensure_dirs_start_with_v(project_path: Path):
+    for subdir in project_path.iterdir():
+        if subdir.is_dir() and not subdir.name.startswith("v"):
+            new_name = "v" + subdir.name
+            new_path = project_path / new_name
+            if new_path.exists():
+                print(f"⚠️ Cannot rename {subdir.name} to {new_name} because it already exists.")
+                continue
+            print(f"✏️ Renaming {subdir.name} to {new_name}")
+            subdir.rename(new_path)
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("❌ Usage: python clone_and_clean_releases.py <GitHub repo URL>")
@@ -161,7 +172,7 @@ if __name__ == "__main__":
             print(f"⚠️ Skipping tag {tag_name} due to error: {e}\n")
 
     # Move processed project folder into final destination
-    final_destination = Path("AI") / "Project-scraped" / short_name
+    final_destination = Path("AI") / "Projects-scraped" / short_name
     final_destination.parent.mkdir(parents=True, exist_ok=True)
 
     if final_destination.exists():
@@ -170,4 +181,8 @@ if __name__ == "__main__":
 
     print(f"📦 Moving {output_root} to {final_destination}")
     shutil.move(str(output_root), str(final_destination))
-    print(f"✅ Project folder moved successfully!")
+
+    # ✅ Vérifie et renomme les dossiers si nécessaire
+    ensure_dirs_start_with_v(final_destination)
+
+    print(f"✅ Project folder moved and cleaned successfully!")
