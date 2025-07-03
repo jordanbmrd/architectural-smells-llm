@@ -197,10 +197,10 @@ def analyze_project(debug=False, smell_type=None):
             arch_detector = ArchitecturalSmellDetector(config_handler.get_thresholds('architectural_smells'))
             architectural_smells = analyze_architectural_smells(args.directory, arch_detector)
 
-        if smell_type in [None, 'structural']:
-            print("Analyzing Structural Smells...")
-            struct_detector = StructuralSmellDetector(config_handler.get_thresholds('structural_smells'))
-            structural_smells = analyze_structural_smells(args.directory, struct_detector)
+        #if smell_type in [None, 'structural']:
+        #    print("Analyzing Structural Smells...")
+        #    struct_detector = StructuralSmellDetector(config_handler.get_thresholds('structural_smells'))
+        #    structural_smells = analyze_structural_smells(args.directory, struct_detector)
 
         generate_report(code_smells, architectural_smells, structural_smells, 
                        output_txt, output_csv)
@@ -332,9 +332,10 @@ def generate_report(code_smells, architectural_smells, structural_smells,
     # Print summary
     report += "\nSummary:\n"
     report += "--------\n"
-    report += f"Total Structural Smells: {len(structural_smells)}\n"
-    report += f"Total Code Smells: {len(code_smells)}\n"
+    #report += f"Total Structural Smells: {len(structural_smells)}\n"
+    #report += f"Total Code Smells: {len(code_smells)}\n"
     report += f"Total Architectural Smells: {len(architectural_smells)}\n"
+    
 
     # Write or print the report
     if output_txt:
