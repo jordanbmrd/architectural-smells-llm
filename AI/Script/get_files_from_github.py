@@ -1,97 +1,86 @@
-import requests
-import sys
-from urllib.parse import urlparse
 import os
+import sys
+import requests
+from urllib.parse import urlparse
 
 def extract_repo_full_name(github_url):
-    """Extract 'owner/repo' from a GitHub URL."""
-    parsed_url = urlparse(github_url)
-    path_parts = parsed_url.path.strip('/').split('/')
-    if len(path_parts) < 2:
-        raise ValueError("Invalid GitHub URL.")
-    return f"{path_parts[0]}/{path_parts[1]}"
+    path = urlparse(github_url).path.strip("/")
+    parts = path.split("/")
+    if len(parts) < 2:
+        raise ValueError("Invalid GitHub URL format.")
+    owner, repo = parts[:2]
+    repo = repo.replace(".git", "")
+    return f"{owner}/{repo}"
 
-def get_commit_sha_from_tag(repo_full_name, tag_name, token=None):
-    """Get the commit SHA corresponding to a specific tag."""
+
+def get_all_tags_with_shas(repo_full_name, token=None):
+    tags = []
+    page = 1
     headers = {"Authorization": f"token {token}"} if token else {}
+    while True:
+        url = f"https://api.github.com/repos/{repo_full_name}/tags"
+        print(f"🔗 Calling GitHub API: https://api.github.com/repos/{repo_full_name}/tags")
+        response = requests.get(url, headers=headers, params={"per_page": 100, "page": page})
+        if response.status_code != 200:
+            raise Exception(f"Failed to fetch tags: {response.status_code}")
+        page_tags = response.json()
+        if not page_tags:
+            break
+        tags.extend([(t["name"], t["commit"]["sha"]) for t in page_tags])
+        page += 1
+    return tags[::-1]  # Oldest to newest
 
-    tag_url = f"https://api.github.com/repos/{repo_full_name}/git/refs/tags/{tag_name}"
-    tag_resp = requests.get(tag_url, headers=headers)
-    if tag_resp.status_code != 200:
-        raise Exception(f"Failed to fetch tag reference for '{tag_name}'.")
-    tag_data = tag_resp.json()
-
-    object_data = tag_data.get('object', {})
-    if object_data.get('type') == 'tag':
-        annotated_tag_url = object_data['url']
-        tag_obj = requests.get(annotated_tag_url, headers=headers).json()
-        return tag_obj.get('object', {}).get('sha')
-    return object_data.get('sha')
-
-def get_first_release_sha(repo_full_name, token=None):
-    """Get the tag name and commit SHA of the first release."""
-    url = f"https://api.github.com/repos/{repo_full_name}/releases"
-    headers = {"Authorization": f"token {token}"} if token else {}
-    resp = requests.get(url, headers=headers)
-    if resp.status_code != 200:
-        raise Exception("Failed to fetch releases.")
-    releases = resp.json()
-    if not releases:
-        raise Exception("No releases found.")
-    first_release = sorted(releases, key=lambda r: r['created_at'])[0]
-    tag_name = first_release['tag_name']
-    sha = get_commit_sha_from_tag(repo_full_name, tag_name, token)
-    return tag_name, sha
-
-def get_python_files_from_commit(repo_full_name, sha, token=None):
-    """Return a list of .py files from a given commit SHA."""
+def get_python_files_from_sha(repo_full_name, sha, token=None):
     url = f"https://api.github.com/repos/{repo_full_name}/git/trees/{sha}?recursive=1"
     headers = {"Authorization": f"token {token}"} if token else {}
     resp = requests.get(url, headers=headers)
     if resp.status_code != 200:
-        raise Exception("Failed to fetch tree.")
+        raise Exception(f"Failed to fetch tree for SHA {sha}")
     tree = resp.json().get('tree', [])
-    py_files = [entry['path'] for entry in tree if entry['type'] == 'blob' and entry['path'].endswith('.py')]
-    return py_files
+    return [entry['path'] for entry in tree if entry['type'] == 'blob' and entry['path'].endswith('.py')]
 
-# Main script
+def save_files_list(project_name, tag_name, py_files):
+    tag_folder = os.path.join("AI", "Projects-scraped", project_name, f"v{tag_name}")
+    os.makedirs(tag_folder, exist_ok=True)
+    output_path = os.path.join(tag_folder, "files.txt")
+    with open(output_path, "w") as f:
+        f.write("\n".join(py_files) + "\n")
+    print(f"✅ Saved {len(py_files)} .py files for tag {tag_name} at {output_path}")
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python script.py <github_repo_url> [tag_name]")
+        print("❌ Usage: python script.py <GitHub repo URL> [optional_tag]")
         sys.exit(1)
 
     github_url = sys.argv[1]
-    tag_name = sys.argv[2] if len(sys.argv) > 2 else None
-    token = None  # Optional: set your GitHub token here
+    tag_name_arg = sys.argv[2] if len(sys.argv) > 2 else None
+    token = None  # Set your GitHub token here if needed
 
     try:
         repo_full_name = extract_repo_full_name(github_url)
-        project_name = repo_full_name.split('/')[-1]
+        project_name = repo_full_name.split("/")[-1]
 
-        if tag_name:
-            print(f"🔎 Getting files for tag: {tag_name}")
-            sha = get_commit_sha_from_tag(repo_full_name, tag_name, token)
-            final_tag_name = tag_name
+        if tag_name_arg:
+            print(f"🔎 Getting files for specific tag: {tag_name_arg}")
+            all_tags = get_all_tags_with_shas(repo_full_name, token)
+            tag_dict = dict(all_tags)
+            if tag_name_arg not in tag_dict:
+                raise Exception(f"Tag {tag_name_arg} not found.")
+            sha = tag_dict[tag_name_arg]
+            py_files = get_python_files_from_sha(repo_full_name, sha, token)
+            save_files_list(project_name, tag_name_arg, py_files)
         else:
-            print("🔎 Getting files from first release")
-            tag_name, sha = get_first_release_sha(repo_full_name, token)
-            final_tag_name = tag_name  # from first release
-
-        py_files = get_python_files_from_commit(repo_full_name, sha, token)
-        print(f"✅ Found {len(py_files)} Python files.")
-
-        # Create output directory if needed
-        output_dir = os.path.join("AI", "Projects-scraped", project_name)
-        os.makedirs(output_dir, exist_ok=True)
-
-        # Write to file: files-<release>.txt
-        output_filename = f"files-{final_tag_name}.txt"
-        output_path = os.path.join(output_dir, output_filename)
-
-        with open(output_path, "w") as f:
-            f.write("\n".join(py_files) + "\n")
-
-        print(f"📁 Python files written to: {output_path}")
-
+            print("🔎 No tag provided. Processing all tags...")
+            all_tags = get_all_tags_with_shas(repo_full_name, token)
+            if not all_tags:
+                print("⚠️ No tags found.")
+                sys.exit(0)
+            for tag_name, sha in all_tags:
+                try:
+                    print(f"📦 Processing tag: {tag_name}")
+                    py_files = get_python_files_from_sha(repo_full_name, sha, token)
+                    save_files_list(project_name, tag_name, py_files)
+                except Exception as e:
+                    print(f"⚠️ Skipping tag '{tag_name}' due to error: {e}")
     except Exception as e:
         print(f"❌ Error: {e}")
