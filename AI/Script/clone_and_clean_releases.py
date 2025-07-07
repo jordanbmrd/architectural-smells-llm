@@ -1,188 +1,145 @@
 #!/usr/bin/env python3
-
 """
-This script automates the collection and cleaning of source code
-from all tagged releases of a public GitHub repository.
-
-It performs the following steps for each release (tag):
-1. Downloads the source code archive via the GitHub API.
-2. Extracts and normalizes the folder structure.
-3. Removes all non-Python files and empty directories.
-4. Runs a static analysis script (`run_analysis.sh`) to generate a code quality report.
-5. Cleans the folder by keeping only the generated report (`code_quality_report.csv`).
-6. Repeats the process for all tags (from oldest to newest).
-7. Finally, moves the cleaned project folder to `AI/Projects-scraped/<project_name>/`.
-
-Usage:
-    python clone_and_clean_releases.py <GitHub repo URL>
-
-Example:
-    python clone_and_clean_releases.py https://github.com/pytorch/pytorch.git
+Clone, clean, and analyze all tagged releases of a GitHub repo.
+Keeps only Python files, generates `files.txt` and `code_quality_report.csv` per release.
+Moves cleaned project to `AI/Projects-scraped/<project_name>/`.
 """
 
 import os
 import sys
-import requests
 import shutil
 import zipfile
 import subprocess
+import requests
 from pathlib import Path
 from urllib.parse import urlparse
+from dotenv import load_dotenv
 
-def is_python_file(path: Path) -> bool:
-    return path.suffix == ".py"
+load_dotenv()
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
-def delete_non_python_files(base: Path):
-    for path in base.rglob("*"):
-        if path.is_file() and not is_python_file(path):
-            path.unlink()
-        elif path.is_dir() and not any(path.iterdir()):
-            path.rmdir()
-
-def delete_empty_dirs(base: Path):
-    for dir_path in sorted(base.rglob("*"), key=lambda p: -len(p.parts)):
-        if dir_path.is_dir() and not any(dir_path.iterdir()):
-            dir_path.rmdir()
-
-def get_repo_info(repo_url: str) -> tuple[str, str]:
+def get_repo_info(repo_url):
     path = urlparse(repo_url).path.strip("/")
-    repo_full_name = path[:-4] if path.endswith(".git") else path
-    repo_short_name = repo_full_name.split("/")[-1]
-    return repo_full_name, repo_short_name
+    repo_full = path[:-4] if path.endswith(".git") else path
+    short_name = repo_full.split("/")[-1]
+    return repo_full, short_name
 
-def get_all_tags(repo_full_name: str) -> list[dict]:
-    tags_url = f"https://api.github.com/repos/{repo_full_name}/tags"
-    tags = []
-    page = 1
+def get_all_tags(repo_full):
+    tags, page = [], 1
+    headers = {"Authorization": f"token {GITHUB_TOKEN}"} if GITHUB_TOKEN else {}
     while True:
-        response = requests.get(tags_url, params={"per_page": 100, "page": page})
-        response.raise_for_status()
-        page_data = response.json()
-        if not page_data:
+        r = requests.get(f"https://api.github.com/repos/{repo_full}/tags", params={"per_page": 100, "page": page}, headers=headers)
+        if r.status_code == 403:
+            raise RuntimeError("GitHub rate limit exceeded. Set GITHUB_TOKEN env variable.")
+        r.raise_for_status()
+        data = r.json()
+        if not data:
             break
-        tags.extend(page_data)
+        tags.extend(data)
         page += 1
-    return tags[::-1]  # From oldest to newest
+    return tags[::-1]
 
-def download_and_extract_zip(zip_url: str, extract_to: Path):
-    temp_zip = extract_to / "temp_release.zip"
-    try:
-        with requests.get(zip_url, stream=True) as r:
-            r.raise_for_status()
-            content_type = r.headers.get("Content-Type", "")
-            if "zip" not in content_type and "octet-stream" not in content_type:
-                raise ValueError(f"Unexpected content type: {content_type}")
+def download_and_extract(zip_url, dest):
+    temp_zip = dest / "release.zip"
+    headers = {"Authorization": f"token {GITHUB_TOKEN}"} if GITHUB_TOKEN else {}
+    with requests.get(zip_url, stream=True, headers=headers) as r:
+        r.raise_for_status()
+        with open(temp_zip, "wb") as f:
+            for chunk in r.iter_content(8192):
+                f.write(chunk)
+    with zipfile.ZipFile(temp_zip, "r") as zip_ref:
+        zip_ref.extractall(dest)
+    temp_zip.unlink()
 
-            with open(temp_zip, "wb") as f:
-                for chunk in r.iter_content(chunk_size=8192):
-                    f.write(chunk)
+def clean_and_list_py_files(base_dir):
+    py_files = []
+    for path in list(base_dir.rglob("*")):
+        if path.is_file() and path.suffix == ".py":
+            py_files.append(path.relative_to(base_dir))
+        elif path.is_file():
+            path.unlink()
+    for d in sorted(base_dir.rglob("*"), key=lambda p: -len(p.parts)):
+        if d.is_dir() and not any(d.iterdir()):
+            d.rmdir()
+    with open(base_dir / "files.txt", "w") as f:
+        f.write("\n".join(str(p) for p in sorted(py_files)))
 
-        with zipfile.ZipFile(temp_zip, "r") as zip_ref:
-            zip_ref.extractall(extract_to)
-    except requests.HTTPError as e:
-        print(f"❌ HTTP error while downloading {zip_url}: {e}")
-        raise
-    except ValueError as e:
-        print(f"❌ Invalid content while downloading {zip_url}: {e}")
-        raise
-    except zipfile.BadZipFile:
-        print(f"❌ Failed to unzip file: {temp_zip} is not a valid zip archive.")
-        raise
-    finally:
-        if temp_zip.exists():
-            temp_zip.unlink()
+def run_analysis(release_dir):
+    script = Path(__file__).parent / "run_analysis.sh"
+    subprocess.run([str(script), str(release_dir)], cwd=Path(__file__).parent, check=True)
 
-def process_tag(repo_full_name: str, tag: dict, root_dir: Path):
+def keep_only_outputs(release_dir):
+    for item in release_dir.iterdir():
+        if item.name not in {"code_quality_report.csv", "files.txt"}:
+            if item.is_dir():
+                shutil.rmtree(item)
+            else:
+                item.unlink()
+
+def process_tag(repo_full, tag, root_dir):
     tag_name = tag["name"]
+    print(f"🔄 Processing {tag_name}")
     release_dir = root_dir / tag_name
-    zipball_url = f"https://api.github.com/repos/{repo_full_name}/zipball/{tag_name}"
-
     if release_dir.exists():
         shutil.rmtree(release_dir)
     release_dir.mkdir(parents=True, exist_ok=True)
+    zip_url = f"https://api.github.com/repos/{repo_full}/zipball/{tag_name}"
+    download_and_extract(zip_url, release_dir)
 
-    print(f"⬇️ Downloading tag {tag_name}")
-    download_and_extract_zip(zipball_url, release_dir)
+    # Unwrap inner directory if needed
+    contents = list(release_dir.iterdir())
+    if len(contents) == 1 and contents[0].is_dir():
+        for f in contents[0].iterdir():
+            shutil.move(str(f), str(release_dir))
+        contents[0].rmdir()
 
-    # Move content of nested folder to root
-    subdirs = list(release_dir.iterdir())
-    if len(subdirs) == 1 and subdirs[0].is_dir():
-        for item in subdirs[0].iterdir():
-            shutil.move(str(item), str(release_dir))
-        subdirs[0].rmdir()
+    clean_and_list_py_files(release_dir)
+    run_analysis(release_dir)
+    keep_only_outputs(release_dir)
+    print(f"✅ Done {tag_name}\n")
 
-    print(f"🧹 Cleaning non-Python files in {tag_name}")
-    delete_non_python_files(release_dir)
-    delete_empty_dirs(release_dir)
-
-    print(f"🚀 Running analysis for {tag_name}")
-    subprocess.run([str(Path(__file__).parent / "run_analysis.sh"), str(release_dir)], cwd=Path(__file__).parent, check=True)
-
-    print(f"🧼 Cleaning folder after analysis...")
-    for item in release_dir.iterdir():
-        if item.name != "code_quality_report.csv":
-            if item.is_file():
-                item.unlink()
-            else:
-                shutil.rmtree(item)
-    print(f"✅ Done with {tag_name}\n")
-
-def ensure_dirs_start_with_v(project_path: Path):
-    for subdir in project_path.iterdir():
-        if subdir.is_dir() and not subdir.name.startswith("v"):
-            new_name = "v" + subdir.name
-            new_path = project_path / new_name
+def rename_dirs_with_v(root):
+    for sub in root.iterdir():
+        if sub.is_dir() and not sub.name.startswith("v"):
+            new_path = root / f"v{sub.name}"
             if new_path.exists():
-                print(f"⚠️ Cannot rename {subdir.name} to {new_name} because it already exists.")
-                continue
-            print(f"✏️ Renaming {subdir.name} to {new_name}")
-            subdir.rename(new_path)
+                print(f"⚠️ Cannot rename {sub.name} → v{sub.name}")
+            else:
+                sub.rename(new_path)
 
-if __name__ == "__main__":
+def main():
     if len(sys.argv) != 2:
-        print("❌ Usage: python clone_and_clean_releases.py <GitHub repo URL>")
+        print("Usage: python clone_and_clean_releases.py <GitHub repo URL>")
         sys.exit(1)
 
     repo_url = sys.argv[1]
-    repo_full_name, short_name = get_repo_info(repo_url)
-    output_root = Path.cwd() / short_name
-    output_root.mkdir(parents=True, exist_ok=True)
+    repo_full, short_name = get_repo_info(repo_url)
+    output_dir = Path.cwd() / short_name
+    output_dir.mkdir(exist_ok=True)
 
-    tags = get_all_tags(repo_full_name)
+    try:
+        tags = get_all_tags(repo_full)
+    except Exception as e:
+        print(f"❌ Failed to fetch tags: {e}")
+        sys.exit(1)
+
     if not tags:
-        print("⚠️ No tags/releases found.")
+        print("⚠️ No tags found.")
         sys.exit(0)
 
-    # Optional: skip old versions until a specific tag is reached
-    start_from_tag = "1.45.1.dev20250511"
-    start_processing = True
-
     for tag in tags:
-        tag_name = tag["name"]
-        if not start_processing:
-            if tag_name == start_from_tag:
-                start_processing = True
-            else:
-                print(f"⏭️ Skipping {tag_name}")
-                continue
-
         try:
-            process_tag(repo_full_name, tag, output_root)
+            process_tag(repo_full, tag, output_dir)
         except Exception as e:
-            print(f"⚠️ Skipping tag {tag_name} due to error: {e}\n")
+            print(f"⚠️ Skipping {tag['name']} due to error: {e}")
 
-    # Move processed project folder into final destination
-    final_destination = Path("AI") / "Projects-scraped" / short_name
-    final_destination.parent.mkdir(parents=True, exist_ok=True)
+    final_path = Path("AI") / "Projects-scraped" / short_name
+    final_path.parent.mkdir(parents=True, exist_ok=True)
+    if final_path.exists():
+        shutil.rmtree(final_path)
+    shutil.move(str(output_dir), str(final_path))
+    rename_dirs_with_v(final_path)
+    print(f"🎉 All done! Output at {final_path}")
 
-    if final_destination.exists():
-        print(f"🗑️ Removing existing folder: {final_destination}")
-        shutil.rmtree(final_destination)
-
-    print(f"📦 Moving {output_root} to {final_destination}")
-    shutil.move(str(output_root), str(final_destination))
-
-    # ✅ Vérifie et renomme les dossiers si nécessaire
-    ensure_dirs_start_with_v(final_destination)
-
-    print(f"✅ Project folder moved and cleaned successfully!")
+if __name__ == "__main__":
+    main()

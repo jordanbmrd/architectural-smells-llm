@@ -2,6 +2,9 @@ import os
 import sys
 import requests
 from urllib.parse import urlparse
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def extract_repo_full_name(github_url):
     path = urlparse(github_url).path.strip("/")
@@ -40,7 +43,9 @@ def get_python_files_from_sha(repo_full_name, sha, token=None):
     return [entry['path'] for entry in tree if entry['type'] == 'blob' and entry['path'].endswith('.py')]
 
 def save_files_list(project_name, tag_name, py_files):
-    tag_folder = os.path.join("AI", "Projects-scraped", project_name, f"v{tag_name}")
+    # Ne pas ajouter 'v' si déjà présent
+    folder_tag = tag_name if tag_name.lower().startswith("v") else f"v{tag_name}"
+    tag_folder = os.path.join("AI", "Projects-scraped", project_name, folder_tag)
     os.makedirs(tag_folder, exist_ok=True)
     output_path = os.path.join(tag_folder, "files.txt")
     with open(output_path, "w") as f:
@@ -54,7 +59,8 @@ if __name__ == "__main__":
 
     github_url = sys.argv[1]
     tag_name_arg = sys.argv[2] if len(sys.argv) > 2 else None
-    token = None  # Set your GitHub token here if needed
+    token = os.getenv("GITHUB_TOKEN")  # Set your GitHub token here if needed
+    #token = None
 
     try:
         repo_full_name = extract_repo_full_name(github_url)
