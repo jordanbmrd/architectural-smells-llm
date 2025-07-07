@@ -75,10 +75,16 @@ def generate_ann_dataset(project_folder):
 
         # Extract relative file paths
         def extract_relative_path(full_path):
-            if version in full_path:
-                idx = full_path.find(version)
-                return full_path[idx + len(version) + 1:].replace("\\", "/")
+            """
+            Try to find the portion of the path that comes after the version directory.
+            Match either with or without 'v' prefix.
+            """
+            for prefix in [version, version.lstrip("v")]:
+                if prefix in full_path:
+                    idx = full_path.find(prefix)
+                    return full_path[idx + len(prefix) + 1:].replace("\\", "/")
             return None
+
 
         df['relative_file'] = df['File'].apply(lambda path: extract_relative_path(str(path)))
 
