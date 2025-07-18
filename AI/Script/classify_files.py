@@ -2,10 +2,8 @@ import requests
 import re
 import matplotlib.pyplot as plt
 from collections import Counter
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
+import csv
+import sys
 
 # Dictionary of patterns for each subtype
 subtype_patterns = {
@@ -69,8 +67,6 @@ def plot_subtype_distribution(classified_files):
     plt.show()
 
 def classify_repo(url, token=None, plot=True):
-    if token is None:
-        token = os.getenv("GITHUB_TOKEN")
     owner, repo = parse_github_url(url)
     files = list_repo_files(owner, repo, token)
     # Keep only Python files
@@ -81,6 +77,21 @@ def classify_repo(url, token=None, plot=True):
     if plot:
         plot_subtype_distribution(classified)
 
+def classify_csv(input_csv_path, output_csv_path):
+    with open(input_csv_path, newline='', encoding='utf-8') as infile, open(output_csv_path, 'w', newline='', encoding='utf-8') as outfile:
+        reader = csv.DictReader(infile)
+        fieldnames = reader.fieldnames + ['subtype']
+        writer = csv.DictWriter(outfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in reader:
+            file_path = row['file']
+            row['subtype'] = get_subtype(file_path)
+            writer.writerow(row)
+
 if __name__ == "__main__":
-    repo_url = input("Enter the GitHub repo URL: ")
-    classify_repo(repo_url)
+    if len(sys.argv) != 3:
+        print("Usage: python classify_files.py <input_csv_path> <output_csv_path>")
+        sys.exit(1)
+    input_csv = sys.argv[1]
+    output_csv = sys.argv[2]
+    classify_csv(input_csv, output_csv)
