@@ -2,6 +2,10 @@ import requests
 import re
 import matplotlib.pyplot as plt
 from collections import Counter
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Dictionary of patterns for each subtype
 subtype_patterns = {
@@ -65,6 +69,8 @@ def plot_subtype_distribution(classified_files):
     plt.show()
 
 def classify_repo(url, token=None, plot=True):
+    if token is None:
+        token = os.getenv("GITHUB_TOKEN")
     owner, repo = parse_github_url(url)
     files = list_repo_files(owner, repo, token)
     # Keep only Python files
