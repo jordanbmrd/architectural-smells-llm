@@ -4,6 +4,31 @@ import csv
 import sys
 from packaging.version import parse as parse_version
 
+# Dictionary of patterns for each subtype (from classify_files.py)
+subtype_patterns = {
+    "Core": ["src/", "lib/", "app/", "main/", "core/"],
+    "Config": ["setup.py", "setup.cfg", "pyproject.toml", "requirements", ".env", "config", "configs", "settings"],
+    "Tests": ["tests/", "test/", "spec/"],
+    "Docs": ["docs/", "README", "CONTRIBUTING", "CHANGELOG", "LICENSE"],
+    "Utils": ["scripts/", "utils/", "bin/", "tools/", "examples/"],
+    "Data": ["data/", "assets/", "resources/", "templates/"],
+    "UI": ["ui/", "frontend/", "webapp/", "static/", "public/"],
+    "Backend": ["server/", "api/", "backend/", "services/"],
+    "Build": ["build/", "dist/", "release/", "packaging/", "MANIFEST.in"],
+    "Deps": ["vendor/", "third_party/", "external/", "node_modules/", "libs/"]
+}
+
+def get_subtype(filepath):
+    """
+    Determine the subtype of a file based on its path pattern.
+    """
+    lowered = filepath.lower()
+    for subtype, patterns in subtype_patterns.items():
+        for pattern in patterns:
+            if pattern.lower() in lowered:
+                return subtype
+    return "Unclassified"
+
 def normalize_smell(smell_name):
     """
     Rename smell types to unify equivalent categories.
@@ -93,12 +118,13 @@ def generate_ann_dataset(project_folder):
 
         # For every file × all smell types, add row with count or 0
         for file in py_files:
+            subtype = get_subtype(file)  # Get subtype for the file
             for smell in all_smells:
                 count = grouped.get((file, smell), 0)
-                dataset_rows.append([version, file, smell, count])
+                dataset_rows.append([version, file, subtype, smell, count])
 
-    # Output dataframe
-    output_df = pd.DataFrame(dataset_rows, columns=["version", "file", "smell", "count"])
+    # Output dataframe with subtype column
+    output_df = pd.DataFrame(dataset_rows, columns=["version", "file", "subtype", "smell", "count"])
 
     # Save to CSV
     output_dir = os.path.join("AI", "Dataset", "ANN-dataset")
