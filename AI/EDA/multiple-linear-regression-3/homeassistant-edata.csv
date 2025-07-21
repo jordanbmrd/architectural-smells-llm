@@ -1,0 +1,12 @@
+version,file_path,smell_count,subtype
+v2024.07.6,custom_components/edata/__init__.py,0,Data
+v2024.07.6,custom_components/edata/button.py,0,Data
+v2024.07.6,custom_components/edata/config_flow.py,2,Config
+v2024.07.6,custom_components/edata/const.py,0,Data
+v2024.07.6,custom_components/edata/coordinator.py,2,Data
+v2024.07.6,custom_components/edata/entity.py,1,Data
+v2024.07.6,custom_components/edata/migrate.py,1,Data
+v2024.07.6,custom_components/edata/schemas.py,1,Data
+v2024.07.6,custom_components/edata/sensor.py,1,Data
+v2024.07.6,custom_components/edata/utils.py,1,Data
+v2024.07.6,custom_components/edata/websockets.py,2,Data

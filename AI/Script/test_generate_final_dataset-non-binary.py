@@ -69,7 +69,7 @@ def generate_ann_dataset(project_folder):
     output_df = pd.DataFrame(dataset_rows, columns=["version", "file", "has_smell"])
 
     # Save to CSV
-    output_dir = os.path.join("AI", "Dataset", "Final-dataset-count")
+    output_dir = os.path.join("AI", "Dataset", "Final-dataset")
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, f"{project_name}.csv")
 

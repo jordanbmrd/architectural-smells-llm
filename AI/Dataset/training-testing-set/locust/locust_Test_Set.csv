@@ -1,5 +1,0 @@
-Release version,Hub-like dependencies,Scattered functionality,Cyclic dependencies,God objects,Unstable dependencies,Improper API usage,Redundant abstractions,High cyclomatic complexity,Deep inheritance trees,High coupling,Low cohesion,Excessive fan-in_fan-out,Large file sizes,Complex conditional structures,Orphan modules
-v0.7.4,0,14,0,3,4,10,0,2,0,6,0,0,3,11,1
-v0.7.5,0,14,0,3,5,10,0,2,0,6,0,0,3,11,1
-v0.8,0,10,0,3,3,12,0,3,0,7,1,0,5,14,1
-v0.8.1,0,10,0,3,3,12,0,3,0,7,1,0,5,14,1
