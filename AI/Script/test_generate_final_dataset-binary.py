@@ -4,16 +4,34 @@ import csv
 import sys
 from packaging.version import parse as parse_version
 
+# Define subtype patterns
+subtype_patterns = {
+    "Core": ["src/", "lib/", "app/", "main/", "core/"],
+    "Config": ["setup.py", "setup.cfg", "pyproject.toml", "requirements", ".env", "config", "configs", "settings"],
+    "Tests": ["tests/", "test/", "spec/"],
+    "Docs": ["docs/", "README", "CONTRIBUTING", "CHANGELOG", "LICENSE"],
+    "Utils": ["scripts/", "utils/", "bin/", "tools/", "examples/"],
+    "Data": ["data/", "assets/", "resources/", "templates/"],
+    "UI": ["ui/", "frontend/", "webapp/", "static/", "public/"],
+    "Backend": ["server/", "api/", "backend/", "services/"],
+    "Build": ["build/", "dist/", "release/", "packaging/", "MANIFEST.in"],
+    "Deps": ["vendor/", "third_party/", "external/", "node_modules/", "libs/"]
+}
+
 def safe_parse_version(v):
-    """
-    Try to parse the version using packaging.version.
-    If it fails, return a dummy version that places it at the end.
-    """
     try:
         v_clean = v.lstrip('v')
         return parse_version(v_clean)
     except:
         return parse_version("9999.9999.9999")
+
+def get_file_type(filepath):
+    lowered = filepath.lower()
+    for subtype, patterns in subtype_patterns.items():
+        for pattern in patterns:
+            if pattern.lower() in lowered:
+                return subtype
+    return "Unclassified"
 
 def generate_ann_dataset(project_folder):
     project_name = os.path.basename(os.path.normpath(project_folder))
@@ -62,11 +80,12 @@ def generate_ann_dataset(project_folder):
 
         # For each file, check if it has at least one smell
         for file in py_files:
+            file_type = get_file_type(file)
             has_smell = 1 if file in smelly_files else 0
-            dataset_rows.append([version, file, has_smell])
+            dataset_rows.append([version, file, file_type, has_smell])
 
     # Output dataframe
-    output_df = pd.DataFrame(dataset_rows, columns=["version", "file", "has_smell"])
+    output_df = pd.DataFrame(dataset_rows, columns=["version", "path", "file-type", "has_smell"])
 
     # Save to CSV
     output_dir = os.path.join("AI", "Dataset", "Final-dataset-binary")
