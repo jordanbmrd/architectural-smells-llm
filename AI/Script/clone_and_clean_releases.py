@@ -132,8 +132,13 @@ def clean_and_list_py_files(base_dir):
             f.write(f"{relative_path},{line_count},{method_count},{coupling_score}\n")
 
 def run_analysis(release_dir):
-    script = Path(__file__).parent / "run_analysis.sh"
-    subprocess.run([str(script), str(release_dir)], cwd=Path(__file__).parent, check=True)
+    # Utiliser le script approprié selon l'OS
+    if os.name == 'nt':  # Windows
+        script = Path(__file__).parent / "run_analysis.bat"
+        subprocess.run([str(script), str(release_dir)], cwd=Path(__file__).parent, check=True, shell=True)
+    else:  # Unix/Linux/macOS
+        script = Path(__file__).parent / "run_analysis.sh"
+        subprocess.run([str(script), str(release_dir)], cwd=Path(__file__).parent, check=True)
 
 def keep_only_outputs(release_dir):
     for item in release_dir.iterdir():
