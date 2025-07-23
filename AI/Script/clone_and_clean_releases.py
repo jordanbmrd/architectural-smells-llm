@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Clone, clean, and analyze all tagged releases of a GitHub repo.
-Keeps only Python files, generates `files.txt` and `code_quality_report.csv` per release.
+Keeps only Python files, generates `files.csv` and `code_quality_report.csv` per release.
 Moves cleaned project to `AI/Projects-scraped/<project_name>/`.
 """
 
@@ -11,6 +11,8 @@ import shutil
 import zipfile
 import subprocess
 import requests
+import ast
+import argparse
 from pathlib import Path
 from urllib.parse import urlparse
 from dotenv import load_dotenv
@@ -51,18 +53,83 @@ def download_and_extract(zip_url, dest):
         zip_ref.extractall(dest)
     temp_zip.unlink()
 
+def count_methods_in_file(file_path):
+    """Count the number of functions and methods in a Python file."""
+    try:
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+        
+        tree = ast.parse(content)
+        method_count = 0
+        
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef):
+                method_count += 1
+        
+        return method_count
+    except (SyntaxError, UnicodeDecodeError, OSError):
+        # If we can't parse the file, return 0
+        return 0
+
+def calculate_coupling_score(file_path):
+    """Calculate coupling score based on imports and external dependencies."""
+    try:
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+        
+        tree = ast.parse(content)
+        coupling_score = 0
+        
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                # Regular imports: import module
+                coupling_score += len(node.names)
+            elif isinstance(node, ast.ImportFrom):
+                # From imports: from module import ...
+                if node.module:  # Avoid None for relative imports like "from . import"
+                    coupling_score += 1
+                    # Add extra weight for specific imports
+                    if node.names:
+                        coupling_score += len(node.names) * 0.5
+                else:
+                    # Relative imports have slightly less coupling
+                    coupling_score += 0.5
+        
+        return round(coupling_score, 1)
+    except (SyntaxError, UnicodeDecodeError, OSError):
+        # If we can't parse the file, return 0
+        return 0.0
+
+def count_lines_in_file(file_path):
+    """Count the number of lines in a file."""
+    try:
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            return sum(1 for _ in f)
+    except (UnicodeDecodeError, OSError):
+        return 0
+
 def clean_and_list_py_files(base_dir):
-    py_files = []
+    py_files_info = []
     for path in list(base_dir.rglob("*")):
         if path.is_file() and path.suffix == ".py":
-            py_files.append(path.relative_to(base_dir))
+            relative_path = path.relative_to(base_dir)
+            line_count = count_lines_in_file(path)
+            method_count = count_methods_in_file(path)
+            coupling_score = calculate_coupling_score(path)
+            py_files_info.append((relative_path, line_count, method_count, coupling_score))
         elif path.is_file():
             path.unlink()
+    
+    # Remove empty directories
     for d in sorted(base_dir.rglob("*"), key=lambda p: -len(p.parts)):
         if d.is_dir() and not any(d.iterdir()):
             d.rmdir()
-    with open(base_dir / "files.txt", "w") as f:
-        f.write("\n".join(str(p) for p in sorted(py_files)))
+    
+    # Write file info as CSV with headers
+    with open(base_dir / "files.csv", "w") as f:
+        f.write("file_path,line_count,method_count,coupling_score\n")
+        for relative_path, line_count, method_count, coupling_score in sorted(py_files_info):
+            f.write(f"{relative_path},{line_count},{method_count},{coupling_score}\n")
 
 def run_analysis(release_dir):
     script = Path(__file__).parent / "run_analysis.sh"
@@ -70,7 +137,7 @@ def run_analysis(release_dir):
 
 def keep_only_outputs(release_dir):
     for item in release_dir.iterdir():
-        if item.name not in {"code_quality_report.csv", "files.txt"}:
+        if item.name not in {"code_quality_report.csv", "files.csv"}:
             if item.is_dir():
                 shutil.rmtree(item)
             else:
@@ -108,11 +175,14 @@ def rename_dirs_with_v(root):
                 sub.rename(new_path)
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python clone_and_clean_releases.py <GitHub repo URL>")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="Clone, clean, and analyze all tagged releases of a GitHub repo")
+    parser.add_argument("repo_url", help="GitHub repository URL")
+    parser.add_argument("--version", help="Start processing from this version (e.g., 'v1.2.0' or '1.2.0')")
+    
+    args = parser.parse_args()
 
-    repo_url = sys.argv[1]
+    repo_url = args.repo_url
+    start_version = args.version
     repo_full, short_name = get_repo_info(repo_url)
     output_dir = Path.cwd() / short_name
     output_dir.mkdir(exist_ok=True)
@@ -126,6 +196,28 @@ def main():
     if not tags:
         print("⚠️ No tags found.")
         sys.exit(0)
+
+    # Filter tags if start_version is specified
+    if start_version:
+        start_found = False
+        filtered_tags = []
+        
+        for tag in tags:
+            tag_name = tag["name"]
+            # Check if this is the starting version (with or without 'v' prefix)
+            if tag_name == start_version or tag_name == f"v{start_version}" or tag_name.lstrip("v") == start_version.lstrip("v"):
+                start_found = True
+            
+            if start_found:
+                filtered_tags.append(tag)
+        
+        if not start_found:
+            print(f"⚠️ Version '{start_version}' not found in tags.")
+            print(f"Available tags: {', '.join([t['name'] for t in tags[:10]])}{'...' if len(tags) > 10 else ''}")
+            sys.exit(1)
+        
+        tags = filtered_tags
+        print(f"🎯 Starting from version {start_version} ({len(tags)} versions to process)")
 
     for tag in tags:
         try:

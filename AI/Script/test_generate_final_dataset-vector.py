@@ -20,14 +20,14 @@ subtype_patterns = {
 
 # Define smell types
 SMELL_TYPES = [
-    "Hub-like dependencies",
-    "Scattered functionality", 
-    "Cyclic dependencies",
-    "God objects",
-    "Unstable dependencies",
-    "Improper API usage",
-    "Redundant abstractions",
-    "Orphan Module"
+    "Scattered Functionality",
+    "Potential Improper API Usage", 
+    "Potential Redundant Abstractions",
+    "Orphan Module",
+    "Unstable Dependency",
+    "Hub-like Dependency",
+    "Cyclic Dependency",
+    "God Object",
 ]
 
 def safe_parse_version(v):
