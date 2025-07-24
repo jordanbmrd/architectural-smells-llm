@@ -18,23 +18,7 @@ subtype_patterns = {
     "Deps": ["vendor/", "third_party/", "external/", "node_modules/", "libs/"]
 }
 
-# Define smell types
-SMELL_TYPES = [
-    "Scattered Functionality",
-    "Potential Improper API Usage", 
-    "Potential Redundant Abstractions",
-    "Orphan Module",
-    "Unstable Dependency",
-    "Hub-like Dependency",
-    "Cyclic Dependency",
-    "God Object",
-]
-
 def safe_parse_version(v):
-    """
-    Try to parse the version using packaging.version.
-    If it fails, return a dummy version that places it at the end.
-    """
     try:
         v_clean = v.lstrip('v')
         return parse_version(v_clean)
@@ -52,14 +36,16 @@ def get_file_type(filepath):
 def generate_ann_dataset(project_folder):
     project_name = os.path.basename(os.path.normpath(project_folder))
 
-    # Read files.txt
-    files_txt_path = os.path.join(project_folder, "files.txt")
-    if not os.path.isfile(files_txt_path):
-        raise FileNotFoundError(f"'files.txt' not found in {project_folder}")
+    # Read files.csv
+    files_csv_path = os.path.join(project_folder, "files.csv")
+    if not os.path.isfile(files_csv_path):
+        raise FileNotFoundError(f"'files.csv' not found in {project_folder}")
     
-    with open(files_txt_path, "r") as f:
-        py_files = [line.strip() for line in f if line.strip()]
-    py_files_set = set(py_files)
+    files_df = pd.read_csv(files_csv_path)
+    files_df['file_path'] = files_df['file_path'].str.replace("\\", "/", regex=False)  # Normalize path
+
+    # Build a lookup dict for metrics by file_path
+    metrics_dict = files_df.set_index('file_path')[['line_count', 'method_count', 'coupling_score']].to_dict('index')
 
     # Find and sort version folders
     version_folders = sorted(
@@ -91,48 +77,46 @@ def generate_ann_dataset(project_folder):
 
         df['relative_file'] = df['File'].apply(lambda path: extract_relative_path(str(path)))
 
-        # Group by file and collect unique smell types for each file
-        file_smells = df.groupby('relative_file')['Name'].apply(lambda x: set(x.dropna())).to_dict()
+        # Build a set of smelly files
+        smelly_files = set(df['relative_file'].dropna().unique())
 
-        # For each file, create a binary vector for each smell type
-        for file in py_files:
-            file_type = get_file_type(file)
-            
-            # Get smells for this file (empty set if no smells)
-            smells_in_file = file_smells.get(file, set())
-            
-            # Create binary vector for each smell type
-            smell_vector = []
-            for smell_type in SMELL_TYPES:
-                has_this_smell = 1 if smell_type in smells_in_file else 0
-                smell_vector.append(has_this_smell)
-            
-            # Create row: [version, file, file_type, smell_vector_as_string]
-            dataset_rows.append([version, file, file_type, str(smell_vector)])
+        # For each file from files.csv, build dataset row
+        for file_path in files_df['file_path']:
+            file_type = get_file_type(file_path)
+            line_count = metrics_dict.get(file_path, {}).get('line_count', 0)
+            method_count = metrics_dict.get(file_path, {}).get('method_count', 0)
+            coupling_score = metrics_dict.get(file_path, {}).get('coupling_score', 0)
+            has_smell = 1 if file_path in smelly_files else 0
 
-    # Create column names
-    columns = ["version", "path", "file-type", "has_smells"]
+            dataset_rows.append([
+                version,
+                file_path,
+                file_type,
+                line_count,
+                method_count,
+                coupling_score,
+                has_smell
+            ])
 
     # Output dataframe
-    output_df = pd.DataFrame(dataset_rows, columns=columns)
+    output_df = pd.DataFrame(dataset_rows, columns=[
+        "version", "path", "file_type", "line_count", "method_count", "coupling_score", "has_smell"
+    ])
 
     # Save to CSV
-    output_dir = os.path.join("AI", "Dataset", "Final-dataset")
+    output_dir = os.path.join("AI", "Dataset", "Final-dataset-binary")
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, f"{project_name}.csv")
 
     output_df.to_csv(output_path, index=False, quoting=csv.QUOTE_NONNUMERIC)
-    print(f"✅ Vector-based dataset saved to: {output_path}")
-    print(f"Smell types mapping:")
-    for i, smell_type in enumerate(SMELL_TYPES):
-        print(f"  smell_{i+1}: {smell_type}")
+    print(f"✅ Final dataset saved to: {output_path}")
 
     return output_path
 
 # Entry point
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python AI/Script/test_generate_ann_dataset.py <project_folder>")
+        print("Usage: python AI/Script/generate_final_dataset_binary.py <project_folder>")
         sys.exit(1)
 
     project_folder = sys.argv[1]
