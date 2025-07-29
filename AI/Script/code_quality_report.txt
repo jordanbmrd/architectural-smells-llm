@@ -1,0 +1,25 @@
+Code Quality Analysis Report
+============================
+
+No structural smells detected.
+
+No code smells detected.
+
+
+Architectural Smells:
+---------------------
+- Potential Improper API Usage: Module 'edata.config_flow' has repetitive API calls: get(4x), async_show_form(8x), async_create_entry(3x), exception(6x), Schema(8x), strip(3x)
+- Potential Improper API Usage: Module 'edata.coordinator' has repetitive API calls: update(4x), debug(9x), warning(15x), as_utc(5x), get(8x), STAT_ID_KWH(4x), STAT_ID_P1_KWH(3x), STAT_ID_P2_KWH(3x), STAT_ID_P3_KWH(3x), STAT_ID_SURP_KWH(4x), STAT_ID_KW(5x), STAT_ID_P1_KW(3x), STAT_ID_P2_KW(3x), STAT_ID_EUR(5x), STAT_ID_P1_EUR(3x), STAT_ID_P2_EUR(3x), STAT_ID_P3_EUR(3x), STAT_ID_POWER_EUR(5x), STAT_ID_ENERGY_EUR(5x), STAT_ID_P1_ENERGY_EUR(3x), STAT_ID_P2_ENERGY_EUR(3x), STAT_ID_P3_ENERGY_EUR(3x), async_add_executor_job(13x), as_local(7x), utc_from_timestamp(4x), get_pvpc_tariff(3x), _add_statistics(3x), _async_update_data(3x), rebuild_statistics(3x), startswith(4x), append(9x), replace(4x)
+- Potential Improper API Usage: Module 'edata.entity' has repetitive API calls: __init__(3x), get(4x)
+- Potential Improper API Usage: Module 'edata.schemas' has repetitive API calls: Required(28x), NumberSelector(9x), update(3x), TemplateSelector(6x), get(17x), Coerce(4x), NumberSelectorConfig(9x)
+- Potential Improper API Usage: Module 'edata.websockets' has repetitive API calls: lower(11x), get(8x), send_result(11x), Required(16x), Optional(14x), Union(6x), extend(3x), error(3x), exception(3x), info(5x)
+- Unstable Dependency: Module 'edata.config_flow' has high instability (1.00) with 12 outgoing and 0 incoming dependencies
+- Unstable Dependency: Module 'edata.coordinator' has high instability (0.96) with 22 outgoing and 1 incoming dependencies
+- Unstable Dependency: Module 'edata.migrate' has high instability (0.86) with 6 outgoing and 1 incoming dependencies
+- Unstable Dependency: Module 'edata.utils' has high instability (0.83) with 10 outgoing and 2 incoming dependencies
+- Unstable Dependency: Module 'edata.sensor' has high instability (1.00) with 5 outgoing and 0 incoming dependencies
+- Unstable Dependency: Module 'edata.websockets' has high instability (0.83) with 5 outgoing and 1 incoming dependencies
+
+Summary:
+--------
+Total Architectural Smells: 11
