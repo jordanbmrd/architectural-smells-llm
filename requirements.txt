@@ -4,3 +4,4 @@ networkx
 pydot
 requests
 gitpython
+pandas
