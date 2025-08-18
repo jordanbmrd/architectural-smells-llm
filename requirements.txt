@@ -4,3 +4,6 @@ networkx
 pydot
 requests
 gitpython
+tensorflow
+matplotlib
+scikit-learn
