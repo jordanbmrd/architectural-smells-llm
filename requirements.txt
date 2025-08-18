@@ -7,3 +7,4 @@ gitpython
 tensorflow
 matplotlib
 scikit-learn
+pandas
