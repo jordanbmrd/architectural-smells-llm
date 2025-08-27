@@ -10,13 +10,15 @@ subtype_patterns = {
     "Core": ["src/", "lib/", "app/", "main/", "core/"],
     "Config": ["setup.py", "setup.cfg", "pyproject.toml", "requirements", ".env", "config", "configs", "settings"],
     "Tests": ["tests/", "test/", "spec/"],
-    "Docs": ["docs/", "README", "CONTRIBUTING", "CHANGELOG", "LICENSE"],
-    "Utils": ["scripts/", "utils/", "bin/", "tools/", "examples/"],
+    "Docs": ["docs/", "README", "CONTRIBUTING", "CHANGELOG", "LICENSE", "CODE_OF_CONDUCT", "USAGE"],
+    "Utils": ["scripts/", "utils/", "bin/", "tools/", "examples/", "update_deps.py"],
     "Data": ["data/", "assets/", "resources/", "templates/"],
     "UI": ["ui/", "frontend/", "webapp/", "static/", "public/"],
     "Backend": ["server/", "api/", "backend/", "services/"],
     "Build": ["build/", "dist/", "release/", "packaging/", "MANIFEST.in"],
-    "Deps": ["vendor/", "third_party/", "external/", "node_modules/", "libs/"]
+    "Deps": ["vendor/", "third_party/", "external/", "node_modules/", "libs/", "requirements/"],
+    "Docker": ["Dockerfile", "docker-compose.yml", "Dockerfile.*"],
+    "Plugins": ["plugins/"]
 }
 
 def get_subtype(filepath):
@@ -77,21 +79,30 @@ def classify_repo(url, token=None, plot=True):
     if plot:
         plot_subtype_distribution(classified)
 
-def classify_csv(input_csv_path, output_csv_path):
+def classify_csv(input_csv_path, output_csv_path, plot=True):
+    classified_files = []
     with open(input_csv_path, newline='', encoding='utf-8') as infile, open(output_csv_path, 'w', newline='', encoding='utf-8') as outfile:
         reader = csv.DictReader(infile)
         fieldnames = reader.fieldnames + ['subtype']
         writer = csv.DictWriter(outfile, fieldnames=fieldnames)
         writer.writeheader()
         for row in reader:
-            file_path = row['file']
-            row['subtype'] = get_subtype(file_path)
+            file_path = row['path']
+            subtype = get_subtype(file_path)
+            row['subtype'] = subtype
             writer.writerow(row)
+            classified_files.append((file_path, subtype))
+    
+    if plot:
+        plot_subtype_distribution(classified_files)
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python classify_files.py <input_csv_path> <output_csv_path>")
+    if len(sys.argv) not in [3, 4]:
+        print("Usage: python classify_files.py <input_csv_path> <output_csv_path> [--no-plot]")
         sys.exit(1)
     input_csv = sys.argv[1]
     output_csv = sys.argv[2]
-    classify_csv(input_csv, output_csv)
+    plot = True
+    if len(sys.argv) == 4 and sys.argv[3] == '--no-plot':
+        plot = False
+    classify_csv(input_csv, output_csv, plot)

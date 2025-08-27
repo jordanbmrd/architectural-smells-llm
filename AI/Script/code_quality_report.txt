@@ -8,18 +8,41 @@ No code smells detected.
 
 Architectural Smells:
 ---------------------
-- Potential Improper API Usage: Module 'edata.config_flow' has repetitive API calls: get(4x), async_show_form(8x), async_create_entry(3x), exception(6x), Schema(8x), strip(3x)
-- Potential Improper API Usage: Module 'edata.coordinator' has repetitive API calls: update(4x), debug(9x), warning(15x), as_utc(5x), get(8x), STAT_ID_KWH(4x), STAT_ID_P1_KWH(3x), STAT_ID_P2_KWH(3x), STAT_ID_P3_KWH(3x), STAT_ID_SURP_KWH(4x), STAT_ID_KW(5x), STAT_ID_P1_KW(3x), STAT_ID_P2_KW(3x), STAT_ID_EUR(5x), STAT_ID_P1_EUR(3x), STAT_ID_P2_EUR(3x), STAT_ID_P3_EUR(3x), STAT_ID_POWER_EUR(5x), STAT_ID_ENERGY_EUR(5x), STAT_ID_P1_ENERGY_EUR(3x), STAT_ID_P2_ENERGY_EUR(3x), STAT_ID_P3_ENERGY_EUR(3x), async_add_executor_job(13x), as_local(7x), utc_from_timestamp(4x), get_pvpc_tariff(3x), _add_statistics(3x), _async_update_data(3x), rebuild_statistics(3x), startswith(4x), append(9x), replace(4x)
-- Potential Improper API Usage: Module 'edata.entity' has repetitive API calls: __init__(3x), get(4x)
-- Potential Improper API Usage: Module 'edata.schemas' has repetitive API calls: Required(28x), NumberSelector(9x), update(3x), TemplateSelector(6x), get(17x), Coerce(4x), NumberSelectorConfig(9x)
-- Potential Improper API Usage: Module 'edata.websockets' has repetitive API calls: lower(11x), get(8x), send_result(11x), Required(16x), Optional(14x), Union(6x), extend(3x), error(3x), exception(3x), info(5x)
-- Unstable Dependency: Module 'edata.config_flow' has high instability (1.00) with 12 outgoing and 0 incoming dependencies
-- Unstable Dependency: Module 'edata.coordinator' has high instability (0.96) with 22 outgoing and 1 incoming dependencies
-- Unstable Dependency: Module 'edata.migrate' has high instability (0.86) with 6 outgoing and 1 incoming dependencies
-- Unstable Dependency: Module 'edata.utils' has high instability (0.83) with 10 outgoing and 2 incoming dependencies
-- Unstable Dependency: Module 'edata.sensor' has high instability (1.00) with 5 outgoing and 0 incoming dependencies
-- Unstable Dependency: Module 'edata.websockets' has high instability (0.83) with 5 outgoing and 1 incoming dependencies
+- Scattered Functionality: Function 'forward' appears in 13 modules: demucs.apply, demucs.hdemucs, demucs.model_v2, demucs.demucs, demucs.transformer, demucs.htdemucs, demucs.model, demucs.tasnet_v2, demucs.tasnet, vr_network.layers, vr_network.layers_new, vr_network.nets, vr_network.nets_new
+- Scattered Functionality: Function 'rescale_module' appears in 3 modules: demucs.model_v2, demucs.demucs, demucs.model
+- Scattered Functionality: Function 'valid_length' appears in 6 modules: demucs.model_v2, demucs.demucs, demucs.htdemucs, demucs.model, demucs.tasnet_v2, demucs.tasnet
+- Scattered Functionality: Function 'rescale_conv' appears in 3 modules: demucs.model_v2, demucs.demucs, demucs.model
+- Potential Redundant Abstractions: Modules demucs.tasnet_v2 and demucs.tasnet have 100.0% similar functionalities
+- God Object: Module 'demucs.utils' has too many public functions (24)
+- God Object: Module 'v5.5.0.separate' has too many public functions (21)
+- God Object: Module 'v5.5.0.UVR' has too many public functions (165)
+- God Object: Module 'lib_v5.spec_utils' has too many public functions (40)
+- Potential Improper API Usage: Module 'v5.5.0.separate' has repetitive API calls: device(7x), empty_cache(3x), cache_source(4x), concatenate(6x), reshape(7x), max(3x), pad(4x), load(5x), cached_source_callback(3x), to(11x), write_to_console(21x), set_progress_bar(6x), load_cached_sources(4x), start_inference(3x), running_inference(4x), join(7x), write_audio(7x), append(6x), reshape_sources(3x), tensor(3x), mean(3x), numpy(8x), load_state_dict(3x), eval(4x), cached_model_source_holder(3x), no_grad(4x), spec_to_wav(3x), resample(3x), exp(4x), zeros(4x), is_available(4x), normalize(7x), cpu(7x), run(3x)
+- Potential Improper API Usage: Module 'v5.5.0.UVR' has repetitive API calls: join(65x), dirname(4x), isdir(9x), mkdir(3x), items(22x), update_checkbox_text(4x), write(42x), read(3x), replace(17x), set(231x), get(308x), isfile(23x), partition(5x), pack(6x), configure(74x), geometry(3x), protocol(11x), update(5x), StringVar(102x), cached_sources_clear(3x), IntVar(3x), BooleanVar(40x), online_data_refresh(5x), update_main_widget_states(3x), delete_temps(3x), Label(26x), clear(4x), place(62x), Button(52x), help_hints(77x), bind(22x), Frame(12x), Entry(5x), Radiobutton(6x), main_window_LABEL_SET(20x), OptionMenu(24x), trace_add(3x), Combobox(23x), combobox_entry_validation(19x), Checkbutton(28x), Scrollbar(5x), config(10x), drop_target_register(4x), dnd_bind(4x), askyesno(6x), assemble_model_data(8x), add_command(24x), insert_separator(4x), add_cascade(6x), insert(7x), winfo_width(3x), Notebook(3x), add(10x), grid_rowconfigure(10x), grid_columnconfigure(10x), menu_FRAME_SET(17x), grid(217x), menu_placement(15x), menu_title_LABEL_SET(22x), menu_sub_LABEL_SET(36x), download_list_state(12x), menu_tab_control(3x), model_list(6x), Text(3x), load(11x), dumps(6x), delete(15x), start(5x), stop_download_Button_DISABLE(3x), get_files_from_dir(6x), update_inputPaths(6x), thread_check(11x), format(22x), perf_counter(4x), time(3x), destroy(25x), menu_settings(4x), menu_advanced_vr_options_close_window(3x), menu_advanced_demucs_options_close_window(3x), menu_advanced_mdx_options_close_window(3x), menu_advanced_ensemble_options_close_window(3x), menu_help_close_window(3x), menu_error_log_close_window(3x), index(12x), remove(11x), tk_popup(7x), grab_release(7x), right_click_menu_delete(3x), download_list_fill(3x), add_radiobutton(14x), urlopen(3x), empty_cache(3x), update_stem_checkbox_labels(13x), error_dialoge(12x), process_end(6x), splitext(9x), listdir(6x), curselection(3x), right_click_menu_popup(3x), Popen(3x), right_click_select_settings_sub(4x), tab(4x), terminate(4x), ensemble_listbox_get_all_selected_models(5x), model_sample_mode_Option_place(3x), is_stem_only_Options_Enable(3x), load_saved_settings(3x), endswith(6x), verify_audio(3x), basename(15x), append(11x), strftime(3x), fullmatch(3x), register(6x), create_sample(3x), startfile(8x), open_new_tab(6x), download_post_action(4x), _setit(15x), check_is_menu_settings_open(5x), download(3x), download_model_select(6x), ensemble_outputs(4x)
+- Potential Improper API Usage: Module 'demucs.demucs' has repetitive API calls: __init__(5x), permute(3x), ModuleList(4x), Conv1d(11x), arange(3x), view(8x), einsum(5x), reshape(3x), Sequential(3x), append(6x), insert(3x)
+- Potential Improper API Usage: Module 'demucs.filtering' has repetitive API calls: zeros(8x), zeros_like(4x), arange(7x), tensor(4x), abs(4x), clone(3x), sum(4x)
+- Potential Improper API Usage: Module 'demucs.hdemucs' has repetitive API calls: pad(7x), __init__(5x), gelu(3x), ModuleList(5x), permute(9x), view(8x), append(11x), reshape(3x), pop(4x), dim(4x), ceil(3x)
+- Potential Improper API Usage: Module 'demucs.htdemucs' has repetitive API calls: ModuleList(4x), pad(3x), permute(5x), view(5x), append(8x), Conv1d(4x), pop(4x), _ispec(3x)
+- Potential Improper API Usage: Module 'demucs.tasnet' has repetitive API calls: view(5x), randint(3x), size(9x), __init__(9x), Conv1d(6x), contiguous(3x), Sequential(6x), Parameter(4x), mean(5x), Tensor(4x), pow(3x)
+- Potential Improper API Usage: Module 'demucs.tasnet_v2' has repetitive API calls: view(5x), randint(3x), size(9x), __init__(9x), Conv1d(6x), contiguous(3x), Sequential(6x), Parameter(4x), mean(5x), Tensor(4x), pow(3x)
+- Potential Improper API Usage: Module 'demucs.transformer' has repetitive API calls: view(4x), cat(4x), zeros(7x), unsqueeze(6x), repeat(5x), to(3x), arange(13x), uniform(3x), __init__(7x), transpose(8x), Linear(6x), Dropout(5x), permute(8x), flatten(3x), reshape(6x), cos(4x), sin(4x), Identity(6x), __setattr__(4x), norm1(4x), norm2(4x), LayerNorm(5x), log(3x), gamma_1(4x), gamma_2(4x), append(4x), _ff_block(4x)
+- Potential Improper API Usage: Module 'lib_v5.spec_utils' has repetitive API calls: abs(29x), angle(6x), stft(8x), asfortranarray(48x), max(7x), append(11x), istft(11x), write(4x), load(5x), set(5x), transpose(3x), flip(10x), exp(4x), where(17x), subtract(8x), linspace(4x), add(10x), diff(4x)
+- Potential Improper API Usage: Module 'vr_network.layers' has repetitive API calls: __init__(5x), Sequential(4x), conv(3x), Conv2d(3x), cat(4x)
+- Potential Improper API Usage: Module 'vr_network.nets' has repetitive API calls: Encoder(5x), Decoder(5x), Conv2d(3x), cat(3x), sigmoid(3x), pad(3x), size(5x)
+- Potential Improper API Usage: Module 'vr_network.nets_new' has repetitive API calls: Conv2DBNActiv(5x), Encoder(4x), Decoder(4x), cat(7x), Sequential(4x), Conv2d(4x), size(5x)
+- Orphan Module: 'v5.5.0.__version__' is isolated from other modules
+- Unstable Dependency: Module 'v5.5.0.separate' has high instability (1.00) with 22 outgoing and 0 incoming dependencies
+- Unstable Dependency: Module 'demucs.apply' has high instability (0.85) with 11 outgoing and 2 incoming dependencies
+- Unstable Dependency: Module 'demucs.model_v2' has high instability (0.83) with 5 outgoing and 1 incoming dependencies
+- Unstable Dependency: Module 'demucs.pretrained' has high instability (0.92) with 11 outgoing and 1 incoming dependencies
+- Unstable Dependency: Module 'v5.5.0.UVR' has high instability (1.00) with 52 outgoing and 0 incoming dependencies
+- Unstable Dependency: Module 'demucs.htdemucs' has high instability (1.00) with 11 outgoing and 0 incoming dependencies
+- Unstable Dependency: Module 'demucs.transformer' has high instability (0.91) with 10 outgoing and 1 incoming dependencies
+- Unstable Dependency: Module 'demucs.repo' has high instability (0.88) with 7 outgoing and 1 incoming dependencies
+- Unstable Dependency: Module 'demucs.tasnet' has high instability (0.83) with 5 outgoing and 1 incoming dependencies
+- Unstable Dependency: Module 'demucs.__main__' has high instability (1.00) with 17 outgoing and 0 incoming dependencies
+- Unstable Dependency: Module 'lib_v5.spec_utils' has high instability (1.00) with 7 outgoing and 0 incoming dependencies
 
 Summary:
 --------
-Total Architectural Smells: 11
+Total Architectural Smells: 34

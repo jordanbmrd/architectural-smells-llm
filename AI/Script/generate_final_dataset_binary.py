@@ -9,13 +9,15 @@ subtype_patterns = {
     "Core": ["src/", "lib/", "app/", "main/", "core/"],
     "Config": ["setup.py", "setup.cfg", "pyproject.toml", "requirements", ".env", "config", "configs", "settings"],
     "Tests": ["tests/", "test/", "spec/"],
-    "Docs": ["docs/", "README", "CONTRIBUTING", "CHANGELOG", "LICENSE"],
-    "Utils": ["scripts/", "utils/", "bin/", "tools/", "examples/"],
+    "Docs": ["docs/", "README", "CONTRIBUTING", "CHANGELOG", "LICENSE", "CODE_OF_CONDUCT", "USAGE"],
+    "Utils": ["scripts/", "utils/", "bin/", "tools/", "examples/", "update_deps.py"],
     "Data": ["data/", "assets/", "resources/", "templates/"],
     "UI": ["ui/", "frontend/", "webapp/", "static/", "public/"],
     "Backend": ["server/", "api/", "backend/", "services/"],
     "Build": ["build/", "dist/", "release/", "packaging/", "MANIFEST.in"],
-    "Deps": ["vendor/", "third_party/", "external/", "node_modules/", "libs/"]
+    "Deps": ["vendor/", "third_party/", "external/", "node_modules/", "libs/", "requirements/"],
+    "Docker": ["Dockerfile", "docker-compose.yml", "Dockerfile.*"],
+    "Plugins": ["plugins/"]
 }
 
 def safe_parse_version(v):
